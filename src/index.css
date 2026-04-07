@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Outfit:wght@400;500;600;700;900&family=Bubblegum+Sans&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-funny: "Bubblegum Sans", cursive;
+}
+
+@layer base {
+  body {
+    @apply bg-fixed;
+    background: linear-gradient(135deg, #fdfcfb 0%, #e2d1f9 100%);
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-lg border border-white/40 shadow-xl;
+  }
+  .iridescent-text {
+    background: linear-gradient(to right, #ff00cc, #3333ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .bubbly-shadow {
+    box-shadow: 0 10px 25px -5px rgba(227, 0, 79, 0.2), 0 8px 10px -6px rgba(227, 0, 79, 0.1);
+  }
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+    body {
+      background: white !important;
+    }
+    .print-container {
+      box-shadow: none !important;
+      border: 1px solid #eee !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      background: white !important;
+    }
+    textarea {
+      border: none !important;
+      background: transparent !important;
+      resize: none !important;
+      padding: 0 !important;
+    }
+  }
+}
+
