@@ -1,21 +1,14 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Calendar, 
-  Store, 
+import {
+  Calendar,
   Users,
   User,
-  Target, 
-  CheckSquare, 
-  TrendingUp, 
-  Moon, 
-  FileText, 
-  ShoppingBag, 
+  Target,
+  CheckSquare,
+  Moon,
+  FileText,
+  ShoppingBag,
   Plus,
   Trash2,
   Layout,
@@ -24,7 +17,6 @@ import {
   Sparkles,
   Coffee,
   CheckCircle2,
-  AlertCircle,
   ChevronDown,
   History
 } from 'lucide-react';
@@ -44,8 +36,6 @@ export default function App() {
     { id: 7, text: 'Kommunikation zwischen den Schichten: Achtung: Die Schublade an Kasse 1 klemmt etwas.' },
     { id: 8, text: 'Kurzes Training: Technischer Tipp: Die neue Mascara sollte in Zickzack-Bewegungen aufgetragen werden, um mehr Volumen zu erzielen.' },
   ]);
-  const printContainerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     // A4 portrait content area with 8mm margins: (210-16)mm x (297-16)mm = 194x281mm
     // At 96dpi: width = 194/25.4*96 ≈ 733px, height = 281/25.4*96 ≈ 1063px
@@ -154,7 +144,7 @@ export default function App() {
 
   const EditableInput = ({ value, onSave, className, placeholder }: any) => {
     const [tempValue, setTempValue] = useState(value);
-    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
       setTempValue(value);
@@ -272,7 +262,6 @@ export default function App() {
   return (
     <div className="min-h-screen p-2 md:p-8 font-sans">
       <motion.div
-        ref={printContainerRef}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-7xl mx-auto glass-card rounded-[3rem] overflow-hidden border-4 border-white/50 flex flex-col min-h-[1100px] print-container bubbly-shadow"

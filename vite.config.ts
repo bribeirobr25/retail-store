@@ -5,8 +5,5 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
-    server: {
-      allowedHosts: ['host.docker.internal'],
-    },
   };
 });
