@@ -293,7 +293,7 @@ export default function App() {
       >
         {/* Header Section - Colorful & Funny */}
         <header className="relative p-8 bg-linear-to-r from-[#e2d1f9] via-[#fdfcfb] to-[#e2d1f9] z-30">
-          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none overflow-hidden no-print">
+          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none overflow-hidden">
             <div className="absolute top-10 left-10">
               <Heart className="w-8 h-8 sm:w-6 sm:h-6 md:w-10 md:h-10" fill="#ff00cc" />
             </div>

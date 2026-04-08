@@ -31,7 +31,7 @@
 
 @page {
   size: A4 portrait;
-  margin: 8mm;
+  margin: 6mm;
 }
 
 @media print {
@@ -42,38 +42,43 @@
   .no-print {
     display: none !important;
   }
+
+  /* Keep the gradient background on body */
   body {
-    background: white !important;
+    background: linear-gradient(135deg, #fdfcfb 0%, #e2d1f9 100%) !important;
     margin: 0 !important;
     padding: 0 !important;
   }
-  /* Outer container */
+
+  /* Outer container — keep rounded corners and shadow look */
   .print-container {
-    box-shadow: none !important;
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    border-radius: 0 !important;
-    border-width: 0 !important;
     min-height: auto !important;
-    background: white !important;
+    border-radius: 24px !important;
+    border: 3px solid rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.7) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    box-shadow: 0 10px 25px -5px rgba(227, 0, 79, 0.15), 0 8px 10px -6px rgba(227, 0, 79, 0.08) !important;
   }
+
+  /* Glass cards — simulate frosted glass with solid semi-transparent bg */
   .glass-card {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
-    background: white !important;
-    border-color: transparent !important;
+    background: rgba(255, 255, 255, 0.75) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03) !important;
   }
 
-  /* 1. Header banner with rounded corners */
+  /* Header — keep the gradient and rounded corners */
   header {
     padding: 10px 20px !important;
     background: linear-gradient(to right, #e2d1f9, #fdfcfb, #e2d1f9) !important;
-    border-radius: 16px !important;
-    margin: 6px 12px 0 12px !important;
+    border-radius: 20px !important;
+    margin: 8px 10px 0 10px !important;
   }
   /* Force header inner layout to row */
   header > div:last-child {
@@ -84,16 +89,16 @@
   header > div:last-child > div:first-child {
     text-align: left !important;
   }
-  /* 2. Center "Monat" label above LY/T1/T2 */
+  /* Center "Monat" label above LY/T1/T2 */
   header > div:last-child > div:last-child {
     align-items: center !important;
   }
 
-  /* 3. Space below header and above body cards */
+  /* Main grid — 2 columns with compact spacing */
   main {
-    padding: 10px 16px 6px 16px !important;
+    padding: 10px 14px 6px 14px !important;
     gap: 10px !important;
-    column-gap: 16px !important;
+    column-gap: 14px !important;
     grid-template-columns: repeat(2, 1fr) !important;
   }
   /* Force column wrappers to flex column */
@@ -103,13 +108,15 @@
     gap: 10px !important;
   }
 
-  /* 4. Rounded border around each card + 5. More vertical padding */
+  /* Section cards — keep colored borders and rounded corners */
   section {
     padding: 8px 12px !important;
-    border-radius: 16px !important;
+    border-radius: 20px !important;
     border-width: 2px !important;
     border-style: solid !important;
     border-color: #e5e7eb !important;
+    background: rgba(255, 255, 255, 0.75) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03) !important;
   }
   /* Preserve Tailwind section border colors */
   section.border-yellow-200 { border-color: #fef08a !important; }
@@ -119,6 +126,7 @@
   section.border-purple-200 { border-color: #e9d5ff !important; }
   section.border-indigo-200 { border-color: #c7d2fe !important; }
   section.border-gray-200 { border-color: #e5e7eb !important; }
+
   section, .glass-card {
     break-inside: avoid;
     page-break-inside: avoid;
