@@ -26,26 +26,111 @@
   .bubbly-shadow {
     box-shadow: 0 10px 25px -5px rgba(227, 0, 79, 0.2), 0 8px 10px -6px rgba(227, 0, 79, 0.1);
   }
-  @media print {
-    .no-print {
-      display: none !important;
-    }
-    body {
-      background: white !important;
-    }
-    .print-container {
-      box-shadow: none !important;
-      border: 1px solid #eee !important;
-      max-width: 100% !important;
-      margin: 0 !important;
-      background: white !important;
-    }
-    textarea {
-      border: none !important;
-      background: transparent !important;
-      resize: none !important;
-      padding: 0 !important;
-    }
-  }
 }
 
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  /* Outer container */
+  .print-container {
+    box-shadow: none !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    border-width: 0 !important;
+    min-height: auto !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    background: white !important;
+    border-color: transparent !important;
+  }
+
+  /* 1. Header banner with rounded corners */
+  header {
+    padding: 10px 20px !important;
+    background: linear-gradient(to right, #e2d1f9, #fdfcfb, #e2d1f9) !important;
+    border-radius: 16px !important;
+    margin: 6px 12px 0 12px !important;
+  }
+  /* Force header inner layout to row */
+  header > div:last-child {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1rem !important;
+  }
+  header > div:last-child > div:first-child {
+    text-align: left !important;
+  }
+  /* 2. Center "Monat" label above LY/T1/T2 */
+  header > div:last-child > div:last-child {
+    align-items: center !important;
+  }
+
+  /* 3. Space below header and above body cards */
+  main {
+    padding: 10px 16px 6px 16px !important;
+    gap: 10px !important;
+    column-gap: 16px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  /* Force column wrappers to flex column */
+  main > div.contents {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* 4. Rounded border around each card + 5. More vertical padding */
+  section {
+    padding: 8px 12px !important;
+    border-radius: 16px !important;
+    border-width: 2px !important;
+    border-style: solid !important;
+    border-color: #e5e7eb !important;
+  }
+  /* Preserve Tailwind section border colors */
+  section.border-yellow-200 { border-color: #fef08a !important; }
+  section.border-pink-200 { border-color: #fbcfe8 !important; }
+  section.border-pink-100 { border-color: #fce7f3 !important; }
+  section.border-blue-200 { border-color: #bfdbfe !important; }
+  section.border-purple-200 { border-color: #e9d5ff !important; }
+  section.border-indigo-200 { border-color: #c7d2fe !important; }
+  section.border-gray-200 { border-color: #e5e7eb !important; }
+  section, .glass-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  section h2 {
+    margin-bottom: 4px !important;
+    font-size: 13px !important;
+  }
+  textarea {
+    border: none !important;
+    background: transparent !important;
+    resize: none !important;
+    padding: 0 !important;
+    font-size: 11px !important;
+  }
+}

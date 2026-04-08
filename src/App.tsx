@@ -34,7 +34,52 @@ export default function App() {
   const [selectedStore, setSelectedStore] = useState('Kiko Taui');
   const storeOptions = ["Kiko Taui", "Kiko Alexa", "Kiko Mall", "Kiko Rosenthal", "Kiko Boulevard"];
   const [showStoreDropdown, setShowStoreDropdown] = useState(false);
-  const [notes, setNotes] = useState([{ id: 1, text: 'Notizen hier schreiben...' }]);
+  const [notes, setNotes] = useState([
+    { id: 1, text: 'Kundenfeedback: Die Kundin hat den Service von [Name] heute sehr gelobt' },
+    { id: 2, text: 'Kundenfeedback: Mehrere Kundinnen fragen nach der Nachlieferung des Lippenstifts [Farbe/Modell].' },
+    { id: 3, text: 'Operative Erinnerungen: Die Lampe in Lager austauschen.' },
+    { id: 4, text: 'Operative Erinnerungen: Bei der nächsten Bestellung mehr mittelgroße Tüten anfordern.' },
+    { id: 5, text: 'Produkt-Highlights: Produkt des Tages: [Produktname] die Vorteile der Feuchtigkeitsversorgung erklären.' },
+    { id: 6, text: 'Ziele und Motivation: Es fehlen nur noch 200 €, um unser zusätzliches Wochenziel zu erreichen!' },
+    { id: 7, text: 'Kommunikation zwischen den Schichten: Achtung: Die Schublade an Kasse 1 klemmt etwas.' },
+    { id: 8, text: 'Kurzes Training: Technischer Tipp: Die neue Mascara sollte in Zickzack-Bewegungen aufgetragen werden, um mehr Volumen zu erzielen.' },
+  ]);
+  const printContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // A4 portrait content area with 8mm margins: (210-16)mm x (297-16)mm = 194x281mm
+    // At 96dpi: width = 194/25.4*96 ≈ 733px, height = 281/25.4*96 ≈ 1063px
+    const A4_PAGE_WIDTH = 733;
+    const A4_PAGE_HEIGHT = 1063;
+
+    const handleBeforePrint = () => {
+      // Reset any previous zoom
+      document.documentElement.style.zoom = '1';
+      // Constrain width to A4 portrait content width to get accurate print-layout height
+      document.documentElement.style.width = A4_PAGE_WIDTH + 'px';
+      document.documentElement.style.overflow = 'visible';
+      const contentHeight = document.documentElement.scrollHeight;
+      document.documentElement.style.width = '';
+      document.documentElement.style.overflow = '';
+      if (contentHeight > A4_PAGE_HEIGHT) {
+        const scale = A4_PAGE_HEIGHT / contentHeight;
+        document.documentElement.style.zoom = String(scale);
+      }
+    };
+
+    const handleAfterPrint = () => {
+      document.documentElement.style.zoom = '';
+      document.documentElement.style.width = '';
+      document.documentElement.style.overflow = '';
+    };
+
+    window.addEventListener('beforeprint', handleBeforePrint);
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint);
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, []);
   
   const formattedDate = new Date(rawDate + 'T12:00:00').toLocaleDateString('de-DE', { 
     weekday: 'long', 
@@ -57,14 +102,38 @@ export default function App() {
     ly: '121.000'
   });
 
-  const [dailyFokus, setDailyFokus] = useState([{ id: 1, text: 'Lançamento Nova Coleção' }]);
+  const [dailyFokus, setDailyFokus] = useState([
+    { id: 1, text: 'KPIs: KikoME > 35%; CR > 33%; UPT > 2.5%' },
+    { id: 2, text: 'Erhöhung des durchschnittlichen Bonwerts: Zu jedem verkauften Lippenstift einen Lipliner anbieten.' },
+    { id: 3, text: 'Zusatzverkauf (Cross-Selling): Nach jedem Verkauf von Foundation oder Puder einen Make-up-Fixierer empfehlen.' },
+    { id: 4, text: 'Fokus auf Neuheiten: Die neue Kollektion [Name der Kollektion] allen Kundinnen vorstellen.' },
+    { id: 5, text: 'Star-Produkt: Heute liegt der Fokus auf der Mascara [Name] – Ziel: 15 Stück.' },
+    { id: 6, text: 'Skincare: Das feuchtigkeitsspendende Serum bei jeder Kundin auf dem Handrücken demonstrieren.' },
+    { id: 7, text: 'Aktive Demonstration: Heute mindestens 5 Flash-Make-ups durchführen.' },
+    { id: 8, text: 'Kundenbindung: Sicherstellen, dass 100 % der Kundinnen über das Treueprogramm Kiko Rewards informiert sind.' },
+    { id: 9, text: 'Premium-Service: Voller Fokus auf eine personalisierte Beratung bei der Wahl des richtigen Foundation-Tons.' },
+  ]);
 
   // Section Item States
-  const [team, setTeam] = useState([{ id: 1, text: 'Simone' }, { id: 2, text: 'Tara' }]);
-  const [pausen, setPausen] = useState([{ id: 1, text: 'Tara: 12:00 - 12:30' }]);
-  const [todo, setTodo] = useState([{ id: 1, name: 'Simone', task: 'Reposição de Batons', checked: false }]);
+  const [team, setTeam] = useState([{ id: 1, text: 'Simone' }]);
+  const [pausen, setPausen] = useState([{ id: 1, text: 'Simone: 12:00 - 13:00' }]);
+  const [todo, setTodo] = useState([
+    { id: 1, name: 'Simone', task: 'Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.', checked: false },
+    { id: 2, name: 'Name', task: 'Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.', checked: false },
+    { id: 3, name: 'Name', task: 'Eröffnungsroutine (Opening): Das Licht und das Soundsystem im Geschäft einschalten. Den Kassenanfangsbestand prüfen (Kasse 1 und 2). Spiegel und Make-up-Tische reinigen. Alle Testpinsel und Applikatoren hygienisch reinigen.', checked: false },
+    { id: 4, name: 'Name', task: 'Wartung und Lagerbestand (Maintenance): Die Lippenstifte der Linie [Name der Linie], die gestern ausverkauft waren, wieder auffüllen.', checked: false },
+    { id: 5, name: 'Name', task: 'Visual Merchandising (VM): Die Preise im Bereich „Last Chance" aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.', checked: false },
+    { id: 6, name: 'Name', task: 'Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen.', checked: false },
+  ]);
   const [kassen, setKassen] = useState([{ id: 1, text: 'Kasse A: Simone' }]);
-  const [abend, setAbend] = useState([{ id: 1, name: 'Tara', task: 'Fechamento de Caixa', checked: false }]);
+  const [abend, setAbend] = useState([
+    { id: 1, name: 'Simone', task: 'Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität', checked: false },
+    { id: 2, name: 'Name', task: 'Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.', checked: false },
+    { id: 3, name: 'Name', task: 'Strategische Warenauffüllung (Restock): Die 10 meistverkauften Produkte (Best Seller) in den Regalen auffüllen. Die Schnellzugriffsschubladen unter den Verkaufstheken auffüllen. Prüfen, ob der Bereich „Neuheiten" vollständig und ordentlich ist. Beschädigte Produkte oder Produkte mit verschmutzter Verpackung aus dem Verkaufsbereich entfernen.', checked: false },
+    { id: 4, name: 'Name', task: 'Visual Merchandising (VM): Alle Produkte in den Regalen sauber ausrichten (Facing machen). Die Impulszone an der Kasse ordentlich auffüllen und organisieren. Sicherstellen, dass Preise und Etiketten sichtbar und korrekt sind.', checked: false },
+    { id: 5, name: 'Name', task: 'Sicherheit und operativer Ablauf: Die Innenbeleuchtung ausschalten, nur die notwendige Beleuchtung bzw. Schaufensterbeleuchtung eingeschaltet lassen. Prüfen, ob alle Lagerschubladen und Schränke abgeschlossen sind. Den Müll aus dem Geschäft und aus dem Pausenraum entsorgen. Die Alarmanlage aktivieren und die Haupteingangstür abschließen.', checked: false },
+    { id: 6, name: 'Name', task: 'Kommunikation (Handover): Eine Notiz für die Frühschichtleitung zu besonderen Vorkommnissen hinterlassen. Den finalen KPI des Tages festhalten, zum Beispiel: Wir haben das Ziel für den durchschnittlichen Bonwert erreicht!', checked: false },
+  ]);
 
   const addItem = (list: any[], setList: Function, placeholder: any) => {
     const newItem = { id: Date.now(), ...placeholder, checked: false };
@@ -202,7 +271,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen p-2 md:p-8 font-sans">
-      <motion.div 
+      <motion.div
+        ref={printContainerRef}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-7xl mx-auto glass-card rounded-[3rem] overflow-hidden border-4 border-white/50 flex flex-col min-h-[1100px] print-container bubbly-shadow"
@@ -343,7 +413,7 @@ export default function App() {
                 icon={Users} 
                 items={team} 
                 setItems={setTeam} 
-                placeholder={{ text: 'Nome' }} 
+                placeholder={{ text: 'Name' }}
                 color="border-yellow-200"
                 isTeam={true}
               />
@@ -355,7 +425,7 @@ export default function App() {
                 icon={Coffee} 
                 items={pausen} 
                 setItems={setPausen} 
-                placeholder={{ text: 'Nome: 00:00 - 00:00' }} 
+                placeholder={{ text: 'Name: 13:00 - 14:00' }}
                 color="border-pink-200"
               />
             </div>
@@ -366,7 +436,7 @@ export default function App() {
                 icon={CheckSquare} 
                 items={todo} 
                 setItems={setTodo} 
-                placeholder={{ name: 'Nome', task: 'Tarefa' }} 
+                placeholder={{ name: 'Name', task: 'Task' }}
                 color="border-blue-200"
                 isChecklist={true}
                 isTask={true}
@@ -382,7 +452,7 @@ export default function App() {
                 icon={Sparkles} 
                 items={dailyFokus} 
                 setItems={setDailyFokus} 
-                placeholder={{ text: 'Was ist der Fokus hoje?' }} 
+                placeholder={{ text: 'Was ist der Fokus heute?' }}
                 color="border-pink-100"
               />
             </div>
@@ -393,7 +463,7 @@ export default function App() {
                 icon={ShoppingBag} 
                 items={kassen} 
                 setItems={setKassen} 
-                placeholder={{ text: 'Kasse: Nome' }} 
+                placeholder={{ text: 'Kasse A/B: Name' }}
                 color="border-purple-200"
               />
             </div>
@@ -404,7 +474,7 @@ export default function App() {
                 icon={Moon} 
                 items={abend} 
                 setItems={setAbend} 
-                placeholder={{ name: 'Nome', task: 'Tarefa' }} 
+                placeholder={{ name: 'Name', task: 'Task' }}
                 color="border-indigo-200"
                 isChecklist={true}
                 isTask={true}
@@ -417,7 +487,7 @@ export default function App() {
                 icon={FileText} 
                 items={notes} 
                 setItems={setNotes} 
-                placeholder={{ text: 'Notizen hier schreiben...' }} 
+                placeholder={{ text: 'Thema: Information' }}
                 color="border-gray-200"
               />
             </div>
@@ -430,11 +500,7 @@ export default function App() {
         <motion.button 
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          onClick={() => {
-            setTimeout(() => {
-              window.print();
-            }, 100);
-          }}
+          onClick={() => window.print()}
           className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-5 py-3 md:px-8 md:py-4 rounded-full shadow-2xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
         >
           <FileText size={20} />
