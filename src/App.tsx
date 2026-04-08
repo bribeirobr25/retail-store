@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import type { Dispatch, SetStateAction, KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Calendar,
@@ -20,13 +21,37 @@ import {
   ChevronDown,
   History
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
+interface TextItem { id: number; text: string }
+interface TaskItem { id: number; name: string; task: string; checked: boolean }
+type SectionItem = TextItem | TaskItem;
+
+interface EditableInputProps {
+  value: string;
+  onSave: (val: string) => void;
+  className?: string;
+  placeholder?: string;
+}
+
+interface SectionProps {
+  title: string;
+  icon: LucideIcon;
+  items: SectionItem[];
+  setItems: Dispatch<SetStateAction<SectionItem[]>>;
+  placeholder: Partial<SectionItem>;
+  color: string;
+  isChecklist?: boolean;
+  isTask?: boolean;
+  isTeam?: boolean;
+}
 
 export default function App() {
   const [rawDate, setRawDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedStore, setSelectedStore] = useState('Kiko Taui');
   const storeOptions = ["Kiko Taui", "Kiko Alexa", "Kiko Mall", "Kiko Rosenthal", "Kiko Boulevard"];
   const [showStoreDropdown, setShowStoreDropdown] = useState(false);
-  const [notes, setNotes] = useState([
+  const [notes, setNotes] = useState<SectionItem[]>([
     { id: 1, text: 'Kundenfeedback: Die Kundin hat den Service von [Name] heute sehr gelobt' },
     { id: 2, text: 'Kundenfeedback: Mehrere Kundinnen fragen nach der Nachlieferung des Lippenstifts [Farbe/Modell].' },
     { id: 3, text: 'Operative Erinnerungen: Die Lampe in Lager austauschen.' },
@@ -92,7 +117,7 @@ export default function App() {
     ly: '121.000'
   });
 
-  const [dailyFokus, setDailyFokus] = useState([
+  const [dailyFokus, setDailyFokus] = useState<SectionItem[]>([
     { id: 1, text: 'KPIs: KikoME > 35%; CR > 33%; UPT > 2.5%' },
     { id: 2, text: 'Erhöhung des durchschnittlichen Bonwerts: Zu jedem verkauften Lippenstift einen Lipliner anbieten.' },
     { id: 3, text: 'Zusatzverkauf (Cross-Selling): Nach jedem Verkauf von Foundation oder Puder einen Make-up-Fixierer empfehlen.' },
@@ -105,9 +130,9 @@ export default function App() {
   ]);
 
   // Section Item States
-  const [team, setTeam] = useState([{ id: 1, text: 'Simone' }]);
-  const [pausen, setPausen] = useState([{ id: 1, text: 'Simone: 12:00 - 13:00' }]);
-  const [todo, setTodo] = useState([
+  const [team, setTeam] = useState<SectionItem[]>([{ id: 1, text: 'Simone' }]);
+  const [pausen, setPausen] = useState<SectionItem[]>([{ id: 1, text: 'Simone: 12:00 - 13:00' }]);
+  const [todo, setTodo] = useState<SectionItem[]>([
     { id: 1, name: 'Simone', task: 'Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.', checked: false },
     { id: 2, name: 'Name', task: 'Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.', checked: false },
     { id: 3, name: 'Name', task: 'Eröffnungsroutine (Opening): Das Licht und das Soundsystem im Geschäft einschalten. Den Kassenanfangsbestand prüfen (Kasse 1 und 2). Spiegel und Make-up-Tische reinigen. Alle Testpinsel und Applikatoren hygienisch reinigen.', checked: false },
@@ -115,8 +140,8 @@ export default function App() {
     { id: 5, name: 'Name', task: 'Visual Merchandising (VM): Die Preise im Bereich „Last Chance" aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.', checked: false },
     { id: 6, name: 'Name', task: 'Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen.', checked: false },
   ]);
-  const [kassen, setKassen] = useState([{ id: 1, text: 'Kasse A: Simone' }]);
-  const [abend, setAbend] = useState([
+  const [kassen, setKassen] = useState<SectionItem[]>([{ id: 1, text: 'Kasse A: Simone' }]);
+  const [abend, setAbend] = useState<SectionItem[]>([
     { id: 1, name: 'Simone', task: 'Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität', checked: false },
     { id: 2, name: 'Name', task: 'Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.', checked: false },
     { id: 3, name: 'Name', task: 'Strategische Warenauffüllung (Restock): Die 10 meistverkauften Produkte (Best Seller) in den Regalen auffüllen. Die Schnellzugriffsschubladen unter den Verkaufstheken auffüllen. Prüfen, ob der Bereich „Neuheiten" vollständig und ordentlich ist. Beschädigte Produkte oder Produkte mit verschmutzter Verpackung aus dem Verkaufsbereich entfernen.', checked: false },
@@ -125,24 +150,24 @@ export default function App() {
     { id: 6, name: 'Name', task: 'Kommunikation (Handover): Eine Notiz für die Frühschichtleitung zu besonderen Vorkommnissen hinterlassen. Den finalen KPI des Tages festhalten, zum Beispiel: Wir haben das Ziel für den durchschnittlichen Bonwert erreicht!', checked: false },
   ]);
 
-  const addItem = (list: any[], setList: Function, placeholder: any) => {
-    const newItem = { id: Date.now(), ...placeholder, checked: false };
+  const addItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, placeholder: Partial<SectionItem>) => {
+    const newItem = { id: Date.now(), ...placeholder, checked: false } as SectionItem;
     setList([...list, newItem]);
   };
 
-  const removeItem = (list: any[], setList: Function, id: number) => {
+  const removeItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, id: number) => {
     setList(list.filter(item => item.id !== id));
   };
 
-  const updateItem = (list: any[], setList: Function, id: number, field: string, value: string) => {
+  const updateItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, id: number, field: string, value: string) => {
     setList(list.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
 
-  const toggleCheck = (list: any[], setList: Function, id: number) => {
-    setList(list.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
+  const toggleCheck = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, id: number) => {
+    setList(list.map(item => item.id === id ? { ...item, checked: !('checked' in item) || !item.checked } : item));
   };
 
-  const EditableInput = ({ value, onSave, className, placeholder }: any) => {
+  const EditableInput = ({ value, onSave, className, placeholder }: EditableInputProps) => {
     const [tempValue, setTempValue] = useState(value);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -158,7 +183,7 @@ export default function App() {
       }
     }, [tempValue]);
 
-    const handleKeyDown = (e: any) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         onSave(tempValue);
@@ -180,7 +205,7 @@ export default function App() {
     );
   };
 
-  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isChecklist = false, isTask = false, isTeam = false }: any) => (
+  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isChecklist = false, isTask = false, isTeam = false }: SectionProps) => (
     <motion.section 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -200,51 +225,51 @@ export default function App() {
       </div>
       <div className={`${isTeam ? 'flex flex-wrap gap-3' : 'space-y-3'}`}>
         <AnimatePresence>
-          {items.map((item: any) => (
+          {items.map((item) => (
             <motion.div 
               key={item.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className={`flex items-center gap-3 group/item relative ${isTeam ? 'bg-white/50 p-2 rounded-xl border border-white/50 shadow-sm min-w-[120px]' : ''}`}
+              className={`flex items-center gap-3 group/item relative ${isTeam ? 'bg-white/50 p-2 rounded-xl border border-white/50 shadow-sm min-w-30' : ''}`}
             >
-              {isChecklist && (
-                <button 
+              {isChecklist && 'checked' in item && (
+                <button
                   onClick={() => toggleCheck(items, setItems, item.id)}
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${item.checked ? 'bg-green-400 border-green-400' : 'border-gray-300'}`}
                 >
                   {item.checked && <CheckCircle2 size={12} className="text-white" />}
                 </button>
               )}
-              
+
               {isTeam && (
                 <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500">
                   <User size={16} />
                 </div>
               )}
 
-              {isTask ? (
+              {isTask && 'name' in item ? (
                 <div className="flex flex-1 gap-2">
-                  <EditableInput 
+                  <EditableInput
                     placeholder="Nome"
                     value={item.name}
                     onSave={(val: string) => updateItem(items, setItems, item.id, 'name', val)}
                     className={`w-1/3 bg-transparent border-none p-0 text-sm font-black text-pink-500 uppercase tracking-widest focus:ring-0 ${item.checked ? 'text-gray-300' : ''}`}
                   />
-                  <EditableInput 
+                  <EditableInput
                     placeholder="Tarefa"
                     value={item.task}
                     onSave={(val: string) => updateItem(items, setItems, item.id, 'task', val)}
                     className={`flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 ${item.checked ? 'text-gray-400 line-through' : 'text-gray-700'}`}
                   />
                 </div>
-              ) : (
-                <EditableInput 
+              ) : 'text' in item ? (
+                <EditableInput
                   value={item.text}
                   onSave={(val: string) => updateItem(items, setItems, item.id, 'text', val)}
-                  className={`flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 ${item.checked ? 'text-gray-400 line-through' : 'text-gray-700'}`}
+                  className={`flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 ${'checked' in item && item.checked ? 'text-gray-400 line-through' : 'text-gray-700'}`}
                 />
-              )}
+              ) : null}
 
               <button 
                 onClick={() => removeItem(items, setItems, item.id)}
@@ -264,10 +289,10 @@ export default function App() {
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-7xl mx-auto glass-card rounded-[3rem] overflow-hidden border-4 border-white/50 flex flex-col min-h-[1100px] print-container bubbly-shadow"
+        className="max-w-7xl mx-auto glass-card rounded-[3rem] overflow-hidden border-4 border-white/50 flex flex-col min-h-275 print-container bubbly-shadow"
       >
         {/* Header Section - Colorful & Funny */}
-        <header className="relative p-8 bg-gradient-to-r from-[#e2d1f9] via-[#fdfcfb] to-[#e2d1f9] z-30">
+        <header className="relative p-8 bg-linear-to-r from-[#e2d1f9] via-[#fdfcfb] to-[#e2d1f9] z-30">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none overflow-hidden no-print">
             <div className="absolute top-10 left-10">
               <Heart className="w-8 h-8 sm:w-6 sm:h-6 md:w-10 md:h-10" fill="#ff00cc" />
@@ -302,7 +327,7 @@ export default function App() {
                 />
                 <ChevronDown size={14} className="opacity-0 group-hover/date:opacity-100 transition-opacity pointer-events-none" />
               </div>
-              <div className={`relative group/store mb-2 ${showStoreDropdown ? 'z-[110]' : 'z-10'}`}>
+              <div className={`relative group/store mb-2 ${showStoreDropdown ? 'z-110' : 'z-10'}`}>
                 <h1 
                   className="text-[clamp(1.8rem,6vw,4.5rem)] font-funny iridescent-text tracking-tight cursor-pointer flex items-center justify-center md:justify-start gap-3 hover:scale-[1.02] transition-transform"
                   onClick={() => setShowStoreDropdown(!showStoreDropdown)}
@@ -312,7 +337,7 @@ export default function App() {
                 </h1>
                 
                 {showStoreDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-[2rem] shadow-2xl border-4 border-purple-50 z-[120] overflow-hidden no-print animate-in fade-in zoom-in duration-200">
+                  <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-4xl shadow-2xl border-4 border-purple-50 z-120 overflow-hidden no-print animate-in fade-in zoom-in duration-200">
                     {storeOptions.map((option) => (
                       <div 
                         key={option}
@@ -336,7 +361,7 @@ export default function App() {
                 Monat: {currentMonth}
               </div>
               <div className="flex gap-3">
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-[80px]">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
                   <History className="text-blue-500 mb-1" size={18} />
                   <EditableInput 
                     value={kpis.ly}
@@ -345,7 +370,7 @@ export default function App() {
                   />
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">LY</span>
                 </div>
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-[80px]">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
                   <Star className="text-yellow-500 mb-1" size={18} />
                   <EditableInput 
                     value={kpis.t1}
@@ -354,7 +379,7 @@ export default function App() {
                   />
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">T1</span>
                 </div>
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-[80px]">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
                   <Sparkles className="text-orange-500 mb-1" size={18} />
                   <EditableInput 
                     value={kpis.t2}
@@ -490,7 +515,7 @@ export default function App() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => window.print()}
-          className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-5 py-3 md:px-8 md:py-4 rounded-full shadow-2xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
+          className="bg-linear-to-r from-pink-500 to-purple-600 text-white px-5 py-3 md:px-8 md:py-4 rounded-full shadow-2xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
         >
           <FileText size={20} />
           <span className="hidden md:inline">PDF generieren</span>
