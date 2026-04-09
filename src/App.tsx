@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { Dispatch, SetStateAction, KeyboardEvent } from 'react';
+import { useTranslation } from './i18n';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Share2,
@@ -118,6 +119,7 @@ interface SectionProps {
 }
 
 export default function App() {
+  const { t, tArray, lang, setLang, locale } = useTranslation();
   const isShared = new URLSearchParams(window.location.search).get('mode') === 'shared';
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareMenuRef = useRef<HTMLDivElement>(null);
@@ -148,14 +150,14 @@ export default function App() {
   };
 
   const handleShareWhatsApp = () => {
-    const text = encodeURIComponent(`Tagesplan: ${getShareUrl()}`);
+    const text = encodeURIComponent(`${t('share.whatsappText')}${getShareUrl()}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
     setShowShareMenu(false);
   };
 
   const handleShareEmail = () => {
-    const subject = encodeURIComponent('Tagesplan - Store Manager Planner');
-    const body = encodeURIComponent(`Hier ist der Tagesplan:\n\n${getShareUrl()}`);
+    const subject = encodeURIComponent(t('share.emailSubject'));
+    const body = encodeURIComponent(`${t('share.emailBody')}${getShareUrl()}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
     setShowShareMenu(false);
   };
@@ -164,25 +166,18 @@ export default function App() {
   const [selectedStore, setSelectedStore] = useState('Kiko Taui');
   const storeOptions = ["Kiko Taui", "Kiko Alexa", "Kiko Mall", "Kiko Rosenthal", "Kiko Boulevard"];
   const [showStoreDropdown, setShowStoreDropdown] = useState(false);
-  const [notes, setNotes] = useState<SectionItem[]>([
-    { id: 1, text: 'Kundenfeedback: Die Kundin hat den Service von [Name] heute sehr gelobt' },
-    { id: 2, text: 'Kundenfeedback: Mehrere Kundinnen fragen nach der Nachlieferung des Lippenstifts [Farbe/Modell].' },
-    { id: 3, text: 'Operative Erinnerungen: Die Lampe in Lager austauschen.' },
-    { id: 4, text: 'Operative Erinnerungen: Bei der nächsten Bestellung mehr mittelgroße Tüten anfordern.' },
-    { id: 5, text: 'Produkt-Highlights: Produkt des Tages: [Produktname] die Vorteile der Feuchtigkeitsversorgung erklären.' },
-    { id: 6, text: 'Ziele und Motivation: Es fehlen nur noch 200 €, um unser zusätzliches Wochenziel zu erreichen!' },
-    { id: 7, text: 'Kommunikation zwischen den Schichten: Achtung: Die Schublade an Kasse 1 klemmt etwas.' },
-    { id: 8, text: 'Kurzes Training: Technischer Tipp: Die neue Mascara sollte in Zickzack-Bewegungen aufgetragen werden, um mehr Volumen zu erzielen.' },
-  ]);
+  const [notes, setNotes] = useState<SectionItem[]>(() =>
+    tArray('defaults.notes').map((text, i) => ({ id: i + 1, text }))
+  );
 
-  const formattedDate = new Date(rawDate + 'T12:00:00').toLocaleDateString('de-DE', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const formattedDate = new Date(rawDate + 'T12:00:00').toLocaleDateString(locale, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 
-  const currentMonth = new Date(rawDate + 'T12:00:00').toLocaleDateString('de-DE', { 
+  const currentMonth = new Date(rawDate + 'T12:00:00').toLocaleDateString(locale, {
     month: 'long'
   });
   
@@ -196,42 +191,26 @@ export default function App() {
     ly: '121.000'
   });
 
-  const [dailyFokus, setDailyFokus] = useState<SectionItem[]>([
-    { id: 1, text: 'KPIs: KikoME > 35%; CR > 33%; UPT > 2.5%' },
-    { id: 2, text: 'Erhöhung des durchschnittlichen Bonwerts: Zu jedem verkauften Lippenstift einen Lipliner anbieten.' },
-    { id: 3, text: 'Zusatzverkauf (Cross-Selling): Nach jedem Verkauf von Foundation oder Puder einen Make-up-Fixierer empfehlen.' },
-    { id: 4, text: 'Fokus auf Neuheiten: Die neue Kollektion [Name der Kollektion] allen Kundinnen vorstellen.' },
-    { id: 5, text: 'Star-Produkt: Heute liegt der Fokus auf der Mascara [Name] – Ziel: 15 Stück.' },
-    { id: 6, text: 'Skincare: Das feuchtigkeitsspendende Serum bei jeder Kundin auf dem Handrücken demonstrieren.' },
-    { id: 7, text: 'Aktive Demonstration: Heute mindestens 5 Flash-Make-ups durchführen.' },
-    { id: 8, text: 'Kundenbindung: Sicherstellen, dass 100 % der Kundinnen über das Treueprogramm Kiko Rewards informiert sind.' },
-    { id: 9, text: 'Premium-Service: Voller Fokus auf eine personalisierte Beratung bei der Wahl des richtigen Foundation-Tons.' },
-  ]);
+  const [dailyFokus, setDailyFokus] = useState<SectionItem[]>(() =>
+    tArray('defaults.focus').map((text, i) => ({ id: i + 1, text }))
+  );
 
   // Section Item States
-  const [team, setTeam] = useState<SectionItem[]>([
-    { id: 1, text: 'Name', iconIndex: randomIconIndex() },
-    { id: 2, text: 'Name', iconIndex: randomIconIndex() },
-    { id: 3, text: 'Name', iconIndex: randomIconIndex() },
-  ]);
-  const [pausen, setPausen] = useState<SectionItem[]>([{ id: 1, text: 'Name: 12:00 - 13:00' }]);
-  const [todo, setTodo] = useState<SectionItem[]>([
-    { id: 1, text: 'Name – Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.' },
-    { id: 2, text: 'Name – Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.' },
-    { id: 3, text: 'Name – Eröffnungsroutine (Opening): Das Licht und das Soundsystem im Geschäft einschalten. Den Kassenanfangsbestand prüfen (Kasse 1 und 2). Spiegel und Make-up-Tische reinigen. Alle Testpinsel und Applikatoren hygienisch reinigen.' },
-    { id: 4, text: 'Name – Wartung und Lagerbestand (Maintenance): Die Lippenstifte der Linie [Name der Linie], die gestern ausverkauft waren, wieder auffüllen.' },
-    { id: 5, text: 'Name – Visual Merchandising (VM): Die Preise im Bereich „Last Chance" aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.' },
-    { id: 6, text: 'Name – Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen.' },
-  ]);
-  const [kassen, setKassen] = useState<SectionItem[]>([{ id: 1, text: 'Kasse A: Name' }]);
-  const [abend, setAbend] = useState<SectionItem[]>([
-    { id: 1, text: 'Name – Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität' },
-    { id: 2, text: 'Name – Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.' },
-    { id: 3, text: 'Name – Strategische Warenauffüllung (Restock): Die 10 meistverkauften Produkte (Best Seller) in den Regalen auffüllen. Die Schnellzugriffsschubladen unter den Verkaufstheken auffüllen. Prüfen, ob der Bereich „Neuheiten" vollständig und ordentlich ist. Beschädigte Produkte oder Produkte mit verschmutzter Verpackung aus dem Verkaufsbereich entfernen.' },
-    { id: 4, text: 'Name – Visual Merchandising (VM): Alle Produkte in den Regalen sauber ausrichten (Facing machen). Die Impulszone an der Kasse ordentlich auffüllen und organisieren. Sicherstellen, dass Preise und Etiketten sichtbar und korrekt sind.' },
-    { id: 5, text: 'Name – Sicherheit und operativer Ablauf: Die Innenbeleuchtung ausschalten, nur die notwendige Beleuchtung bzw. Schaufensterbeleuchtung eingeschaltet lassen. Prüfen, ob alle Lagerschubladen und Schränke abgeschlossen sind. Den Müll aus dem Geschäft und aus dem Pausenraum entsorgen. Die Alarmanlage aktivieren und die Haupteingangstür abschließen.' },
-    { id: 6, text: 'Name – Kommunikation (Handover): Eine Notiz für die Frühschichtleitung zu besonderen Vorkommnissen hinterlassen. Den finalen KPI des Tages festhalten, zum Beispiel: Wir haben das Ziel für den durchschnittlichen Bonwert erreicht!' },
-  ]);
+  const [team, setTeam] = useState<SectionItem[]>(() =>
+    tArray('defaults.team').map((text, i) => ({ id: i + 1, text, iconIndex: randomIconIndex() }))
+  );
+  const [pausen, setPausen] = useState<SectionItem[]>(() =>
+    tArray('defaults.breaks').map((text, i) => ({ id: i + 1, text }))
+  );
+  const [todo, setTodo] = useState<SectionItem[]>(() =>
+    tArray('defaults.todo').map((text, i) => ({ id: i + 1, text }))
+  );
+  const [kassen, setKassen] = useState<SectionItem[]>(() =>
+    tArray('defaults.registers').map((text, i) => ({ id: i + 1, text }))
+  );
+  const [abend, setAbend] = useState<SectionItem[]>(() =>
+    tArray('defaults.evening').map((text, i) => ({ id: i + 1, text }))
+  );
 
   const addItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, placeholder: Partial<SectionItem>) => {
     const newItem = { id: Date.now(), ...placeholder, iconIndex: randomIconIndex() } as SectionItem;
@@ -439,8 +418,8 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
-            <div className="text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+            <div className="text-center md:text-left md:flex-1">
               <div className="flex items-center justify-center md:justify-start gap-2 text-purple-600 mb-6 relative group/date cursor-pointer z-30 w-fit mx-auto md:mx-0">
                 <Calendar size={18} className="pointer-events-none" />
                 <span className="text-xs font-black uppercase tracking-widest text-purple-600 transition-colors group-hover/date:text-pink-500 pointer-events-none">
@@ -491,12 +470,26 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2 md:flex-1 relative">
+              <div className="flex rounded-full border border-purple-200 overflow-hidden no-print md:absolute md:top-0 md:right-0">
+                <button
+                  onClick={() => setLang('de')}
+                  className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${lang === 'de' ? 'bg-purple-500 text-white' : 'bg-white/50 text-purple-400 hover:bg-purple-50'}`}
+                >
+                  DE
+                </button>
+                <button
+                  onClick={() => setLang('en')}
+                  className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${lang === 'en' ? 'bg-purple-500 text-white' : 'bg-white/50 text-purple-400 hover:bg-purple-50'}`}
+                >
+                  EN
+                </button>
+              </div>
               <div className="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] bg-white/50 px-3 py-1 rounded-full border border-purple-100">
-                Monat: {currentMonth}
+                {t('header.month')}: {currentMonth}
               </div>
               <div className="flex gap-3">
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[110px]">
                   <History className="text-blue-500 mb-1" size={18} />
                   <EditableInput
                     value={kpis.ly}
@@ -504,9 +497,9 @@ export default function App() {
                     className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-blue-600"
                     readOnly={isShared}
                   />
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">LY</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('kpi.ly')}</span>
                 </div>
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[110px]">
                   <Star className="text-yellow-500 mb-1" size={18} />
                   <EditableInput
                     value={kpis.t1}
@@ -514,9 +507,9 @@ export default function App() {
                     className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-yellow-600"
                     readOnly={isShared}
                   />
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">T1</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('kpi.t1')}</span>
                 </div>
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[110px]">
                   <Sparkles className="text-orange-500 mb-1" size={18} />
                   <EditableInput
                     value={kpis.t2}
@@ -524,7 +517,7 @@ export default function App() {
                     className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-orange-600"
                     readOnly={isShared}
                   />
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">T2</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('kpi.t2')}</span>
                 </div>
               </div>
             </div>
@@ -538,9 +531,9 @@ export default function App() {
             <div className="order-1">
               <div className="grid grid-cols-3 gap-3 md:gap-6">
                 {[
-                  { label: 'Today\'s Target', value: kpis.target, key: 'target', icon: Target, color: 'text-blue-500' },
-                  { label: 'LY', value: kpis.vj, key: 'vj', icon: History, color: 'text-pink-500' },
-                  { label: 'Week\'s Target', value: kpis.targetWeek, key: 'targetWeek', icon: Layout, color: 'text-purple-500' },
+                  { label: t('kpi.todaysTarget'), value: kpis.target, key: 'target', icon: Target, color: 'text-blue-500' },
+                  { label: t('kpi.lastYear'), value: kpis.vj, key: 'vj', icon: History, color: 'text-pink-500' },
+                  { label: t('kpi.weeksTarget'), value: kpis.targetWeek, key: 'targetWeek', icon: Layout, color: 'text-purple-500' },
                 ].map((kpi) => (
                   <motion.div 
                     whileHover={{ scale: 1.05 }}
@@ -562,11 +555,11 @@ export default function App() {
 
             <div className="order-3">
               <Section 
-                title="Team" 
-                icon={Users} 
-                items={team} 
-                setItems={setTeam} 
-                placeholder={{ text: 'Name' }}
+                title={t('sections.team')}
+                icon={Users}
+                items={team}
+                setItems={setTeam}
+                placeholder={{ text: t('placeholders.name') }}
                 color="border-yellow-200"
                 isTeam={true}
                 readOnly={isShared}
@@ -575,11 +568,11 @@ export default function App() {
             
             <div className="order-4">
               <Section 
-                title="Pausen" 
-                icon={Coffee} 
-                items={pausen} 
-                setItems={setPausen} 
-                placeholder={{ text: 'Name: 13:00 - 14:00' }}
+                title={t('sections.breaks')}
+                icon={Coffee}
+                items={pausen}
+                setItems={setPausen}
+                placeholder={{ text: t('placeholders.breakTime') }}
                 color="border-pink-200"
                 printColumns
                 readOnly={isShared}
@@ -588,11 +581,11 @@ export default function App() {
 
             <div className="order-6">
               <Section 
-                title="To Do"
+                title={t('sections.todo')}
                 icon={CheckSquare}
                 items={todo}
                 setItems={setTodo}
-                placeholder={{ text: 'Name – Task' }}
+                placeholder={{ text: t('placeholders.task') }}
                 color="border-blue-200"
                 formatDash
                 readOnly={isShared}
@@ -604,11 +597,11 @@ export default function App() {
           <div className="contents md:flex md:flex-col md:gap-14">
             <div className="order-2">
               <Section 
-                title="Daily Fokus" 
-                icon={Sparkles} 
-                items={dailyFokus} 
-                setItems={setDailyFokus} 
-                placeholder={{ text: 'Was ist der Fokus heute?' }}
+                title={t('sections.dailyFocus')}
+                icon={Sparkles}
+                items={dailyFokus}
+                setItems={setDailyFokus}
+                placeholder={{ text: t('placeholders.focusToday') }}
                 color="border-pink-100"
                 readOnly={isShared}
               />
@@ -616,11 +609,11 @@ export default function App() {
 
             <div className="order-5">
               <Section 
-                title="Kassen" 
-                icon={ShoppingBag} 
-                items={kassen} 
-                setItems={setKassen} 
-                placeholder={{ text: 'Kasse A/B: Name' }}
+                title={t('sections.registers')}
+                icon={ShoppingBag}
+                items={kassen}
+                setItems={setKassen}
+                placeholder={{ text: t('placeholders.registerName') }}
                 color="border-purple-200"
                 printColumns
                 readOnly={isShared}
@@ -629,11 +622,11 @@ export default function App() {
 
             <div className="order-7">
               <Section 
-                title="Abend"
+                title={t('sections.evening')}
                 icon={Moon}
                 items={abend}
                 setItems={setAbend}
-                placeholder={{ text: 'Name – Task' }}
+                placeholder={{ text: t('placeholders.task') }}
                 color="border-indigo-200"
                 formatDash
                 readOnly={isShared}
@@ -642,11 +635,11 @@ export default function App() {
 
             <div className="order-8">
               <Section 
-                title="Note" 
-                icon={FileText} 
-                items={notes} 
-                setItems={setNotes} 
-                placeholder={{ text: 'Thema: Information' }}
+                title={t('sections.notes')}
+                icon={FileText}
+                items={notes}
+                setItems={setNotes}
+                placeholder={{ text: t('placeholders.noteInfo') }}
                 color="border-gray-200"
               />
             </div>
@@ -664,7 +657,7 @@ export default function App() {
             className="bg-white text-purple-600 border-2 border-purple-200 px-5 py-3 md:px-8 md:py-4 rounded-full shadow-xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
           >
             <Share2 size={20} />
-            <span className="hidden md:inline">Teilen</span>
+            <span className="hidden md:inline">{t('ui.share')}</span>
           </motion.button>
 
           <AnimatePresence>
@@ -679,19 +672,19 @@ export default function App() {
                   onClick={handleCopyLink}
                   className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-purple-50 flex items-center gap-3 transition-colors"
                 >
-                  <Link size={18} className="text-purple-500" /> Link kopieren
+                  <Link size={18} className="text-purple-500" /> {t('ui.copyLink')}
                 </button>
                 <button
                   onClick={handleShareWhatsApp}
                   className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-green-50 flex items-center gap-3 transition-colors border-t border-gray-100"
                 >
-                  <MessageCircle size={18} className="text-green-500" /> WhatsApp
+                  <MessageCircle size={18} className="text-green-500" /> {t('ui.whatsapp')}
                 </button>
                 <button
                   onClick={handleShareEmail}
                   className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-blue-50 flex items-center gap-3 transition-colors border-t border-gray-100"
                 >
-                  <Mail size={18} className="text-blue-500" /> E-Mail
+                  <Mail size={18} className="text-blue-500" /> {t('ui.email')}
                 </button>
               </motion.div>
             )}
@@ -705,8 +698,8 @@ export default function App() {
           className="bg-linear-to-r from-pink-500 to-purple-600 text-white px-5 py-3 md:px-8 md:py-4 rounded-full shadow-2xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
         >
           <FileText size={20} />
-          <span className="hidden md:inline">PDF generieren</span>
-          <span className="md:hidden">PDF</span>
+          <span className="hidden md:inline">{t('ui.generatePdf')}</span>
+          <span className="md:hidden">{t('ui.generatePdfShort')}</span>
         </motion.button>
       </div>
 
@@ -719,7 +712,7 @@ export default function App() {
             exit={{ opacity: 0, y: 20 }}
             className="fixed bottom-24 right-6 md:bottom-28 md:right-8 bg-green-500 text-white px-6 py-3 rounded-full shadow-xl font-medium text-sm z-50 no-print"
           >
-            Link kopiert!
+            {t('ui.linkCopied')}
           </motion.div>
         )}
       </AnimatePresence>
