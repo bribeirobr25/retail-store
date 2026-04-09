@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import type { Dispatch, SetStateAction, KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
+  Share2,
+  Link,
+  MessageCircle,
+  Mail,
   Calendar,
   Users,
   Target,
@@ -97,6 +101,7 @@ interface EditableInputProps {
   placeholder?: string;
   formatPrefix?: boolean;
   formatDash?: boolean;
+  readOnly?: boolean;
 }
 
 interface SectionProps {
@@ -109,9 +114,52 @@ interface SectionProps {
   isTeam?: boolean;
   printColumns?: boolean;
   formatDash?: boolean;
+  readOnly?: boolean;
 }
 
 export default function App() {
+  const isShared = new URLSearchParams(window.location.search).get('mode') === 'shared';
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showShareMenu) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(e.target as Node)) {
+        setShowShareMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showShareMenu]);
+  const [showShareToast, setShowShareToast] = useState(false);
+
+  const getShareUrl = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('mode', 'shared');
+    return url.toString();
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(getShareUrl());
+    setShowShareMenu(false);
+    setShowShareToast(true);
+    setTimeout(() => setShowShareToast(false), 2000);
+  };
+
+  const handleShareWhatsApp = () => {
+    const text = encodeURIComponent(`Tagesplan: ${getShareUrl()}`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+    setShowShareMenu(false);
+  };
+
+  const handleShareEmail = () => {
+    const subject = encodeURIComponent('Tagesplan - Store Manager Planner');
+    const body = encodeURIComponent(`Hier ist der Tagesplan:\n\n${getShareUrl()}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    setShowShareMenu(false);
+  };
+
   const [rawDate, setRawDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedStore, setSelectedStore] = useState('Kiko Taui');
   const storeOptions = ["Kiko Taui", "Kiko Alexa", "Kiko Mall", "Kiko Rosenthal", "Kiko Boulevard"];
@@ -199,7 +247,7 @@ export default function App() {
   };
 
 
-  const EditableInput = ({ value, onSave, className, placeholder, formatPrefix = false, formatDash = false }: EditableInputProps) => {
+  const EditableInput = ({ value, onSave, className, placeholder, formatPrefix = false, formatDash = false, readOnly = false }: EditableInputProps) => {
     const [tempValue, setTempValue] = useState(value);
     const [isEditing, setIsEditing] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -240,8 +288,8 @@ export default function App() {
         const hasDash = dashIndex > 0;
         return (
           <div
-            onClick={() => setIsEditing(true)}
-            className={`${className} cursor-text leading-tight whitespace-pre-wrap`}
+            onClick={() => !readOnly && setIsEditing(true)}
+            className={`${className} ${readOnly ? '' : 'cursor-text'} leading-tight whitespace-pre-wrap`}
           >
             {hasDash ? (
               <>
@@ -273,8 +321,8 @@ export default function App() {
       const hasPrefix = formatPrefix && colonIndex > 0;
       return (
         <div
-          onClick={() => setIsEditing(true)}
-          className={`${className} cursor-text leading-tight whitespace-pre-wrap`}
+          onClick={() => !readOnly && setIsEditing(true)}
+          className={`${className} ${readOnly ? '' : 'cursor-text'} leading-tight whitespace-pre-wrap`}
         >
           {hasPrefix ? (
             <>
@@ -302,7 +350,7 @@ export default function App() {
     );
   };
 
-  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isTeam = false, printColumns = false, formatDash = false }: SectionProps) => (
+  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isTeam = false, printColumns = false, formatDash = false, readOnly = false }: SectionProps) => (
     <motion.section 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -313,12 +361,14 @@ export default function App() {
           <Icon size={24} className={color.replace('border-', 'text-')} />
           {title}
         </h2>
-        <button 
-          onClick={() => addItem(items, setItems, placeholder)}
-          className={`p-2 rounded-full hover:scale-110 transition-all no-print ${color.replace('border-', 'bg-').replace('border-', 'text-white')}`}
-        >
-          <Plus size={18} />
-        </button>
+        {!readOnly && (
+          <button
+            onClick={() => addItem(items, setItems, placeholder)}
+            className={`p-2 rounded-full hover:scale-110 transition-all no-print ${color.replace('border-', 'bg-').replace('border-', 'text-white')}`}
+          >
+            <Plus size={18} />
+          </button>
+        )}
       </div>
       <div className={`${isTeam ? 'flex flex-wrap gap-3' : 'space-y-3'} ${printColumns ? 'print-columns' : ''}`}>
         <AnimatePresence>
@@ -350,14 +400,17 @@ export default function App() {
                 className="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-gray-700"
                 formatPrefix={!isTeam && !formatDash}
                 formatDash={formatDash}
+                readOnly={readOnly}
               />
 
-              <button 
-                onClick={() => removeItem(items, setItems, item.id)}
-                className={`p-1 text-gray-300 hover:text-red-400 transition-all no-print z-10 ${isTeam ? 'absolute -top-2 -right-2 bg-white rounded-full shadow-md opacity-100' : 'opacity-0 group-hover/item:opacity-100'}`}
-              >
-                <Trash2 size={14} />
-              </button>
+              {!readOnly && (
+                <button
+                  onClick={() => removeItem(items, setItems, item.id)}
+                  className={`p-1 text-gray-300 hover:text-red-400 transition-all no-print z-10 ${isTeam ? 'absolute -top-2 -right-2 bg-white rounded-full shadow-md opacity-100' : 'opacity-0 group-hover/item:opacity-100'}`}
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -396,7 +449,8 @@ export default function App() {
                 <input 
                   type="date" 
                   value={rawDate} 
-                  onChange={(e) => setRawDate(e.target.value)}
+                  onChange={(e) => !isShared && setRawDate(e.target.value)}
+                  disabled={isShared}
                   onClick={(e) => {
                     try {
                       (e.target as HTMLInputElement).showPicker();
@@ -411,7 +465,7 @@ export default function App() {
               <div className={`relative group/store mb-2 ${showStoreDropdown ? 'z-110' : 'z-10'}`}>
                 <h1 
                   className="text-[clamp(1.8rem,6vw,4.5rem)] font-funny iridescent-text tracking-tight cursor-pointer flex items-center justify-center md:justify-start gap-3 hover:scale-[1.02] transition-transform"
-                  onClick={() => setShowStoreDropdown(!showStoreDropdown)}
+                  onClick={() => !isShared && setShowStoreDropdown(!showStoreDropdown)}
                 >
                   KIKO <span className="text-gray-800 uppercase">{selectedStore.split(' ')[1] || 'MILANO'}</span>
                   <ChevronDown size={28} className="text-gray-300 group-hover/store:text-purple-400 transition-colors no-print" />
@@ -444,28 +498,31 @@ export default function App() {
               <div className="flex gap-3">
                 <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
                   <History className="text-blue-500 mb-1" size={18} />
-                  <EditableInput 
+                  <EditableInput
                     value={kpis.ly}
                     onSave={(val: string) => setKpis({ ...kpis, ly: val })}
                     className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-blue-600"
+                    readOnly={isShared}
                   />
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">LY</span>
                 </div>
                 <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
                   <Star className="text-yellow-500 mb-1" size={18} />
-                  <EditableInput 
+                  <EditableInput
                     value={kpis.t1}
                     onSave={(val: string) => setKpis({ ...kpis, t1: val })}
                     className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-yellow-600"
+                    readOnly={isShared}
                   />
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">T1</span>
                 </div>
                 <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20">
                   <Sparkles className="text-orange-500 mb-1" size={18} />
-                  <EditableInput 
+                  <EditableInput
                     value={kpis.t2}
                     onSave={(val: string) => setKpis({ ...kpis, t2: val })}
                     className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-orange-600"
+                    readOnly={isShared}
                   />
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">T2</span>
                 </div>
@@ -491,10 +548,11 @@ export default function App() {
                     className="glass-card p-3 rounded-2xl border-2 border-white flex flex-col items-center text-center"
                   >
                     <kpi.icon size={18} className={`${kpi.color} mb-1`} />
-                    <EditableInput 
+                    <EditableInput
                       value={kpi.value}
                       onSave={(val: string) => setKpis({ ...kpis, [kpi.key]: val })}
                       className={`w-full text-center bg-transparent border-none p-0 text-lg font-funny focus:ring-0 ${kpi.color}`}
+                      readOnly={isShared}
                     />
                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-tight">{kpi.label}</span>
                   </motion.div>
@@ -511,6 +569,7 @@ export default function App() {
                 placeholder={{ text: 'Name' }}
                 color="border-yellow-200"
                 isTeam={true}
+                readOnly={isShared}
               />
             </div>
             
@@ -523,6 +582,7 @@ export default function App() {
                 placeholder={{ text: 'Name: 13:00 - 14:00' }}
                 color="border-pink-200"
                 printColumns
+                readOnly={isShared}
               />
             </div>
 
@@ -535,6 +595,7 @@ export default function App() {
                 placeholder={{ text: 'Name – Task' }}
                 color="border-blue-200"
                 formatDash
+                readOnly={isShared}
               />
             </div>
           </div>
@@ -549,6 +610,7 @@ export default function App() {
                 setItems={setDailyFokus} 
                 placeholder={{ text: 'Was ist der Fokus heute?' }}
                 color="border-pink-100"
+                readOnly={isShared}
               />
             </div>
 
@@ -561,6 +623,7 @@ export default function App() {
                 placeholder={{ text: 'Kasse A/B: Name' }}
                 color="border-purple-200"
                 printColumns
+                readOnly={isShared}
               />
             </div>
 
@@ -573,6 +636,7 @@ export default function App() {
                 placeholder={{ text: 'Name – Task' }}
                 color="border-indigo-200"
                 formatDash
+                readOnly={isShared}
               />
             </div>
 
@@ -590,9 +654,51 @@ export default function App() {
         </main>
       </motion.div>
 
-      {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 flex flex-col items-end gap-2 no-print z-50">
-        <motion.button 
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 flex flex-col items-end gap-3 no-print z-50">
+        <div className="relative" ref={shareMenuRef}>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowShareMenu(!showShareMenu)}
+            className="bg-white text-purple-600 border-2 border-purple-200 px-5 py-3 md:px-8 md:py-4 rounded-full shadow-xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
+          >
+            <Share2 size={20} />
+            <span className="hidden md:inline">Teilen</span>
+          </motion.button>
+
+          <AnimatePresence>
+            {showShareMenu && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                className="absolute bottom-full right-0 mb-2 bg-white rounded-2xl shadow-2xl border-2 border-purple-100 overflow-hidden w-56"
+              >
+                <button
+                  onClick={handleCopyLink}
+                  className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-purple-50 flex items-center gap-3 transition-colors"
+                >
+                  <Link size={18} className="text-purple-500" /> Link kopieren
+                </button>
+                <button
+                  onClick={handleShareWhatsApp}
+                  className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-green-50 flex items-center gap-3 transition-colors border-t border-gray-100"
+                >
+                  <MessageCircle size={18} className="text-green-500" /> WhatsApp
+                </button>
+                <button
+                  onClick={handleShareEmail}
+                  className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-blue-50 flex items-center gap-3 transition-colors border-t border-gray-100"
+                >
+                  <Mail size={18} className="text-blue-500" /> E-Mail
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => window.print()}
@@ -603,6 +709,20 @@ export default function App() {
           <span className="md:hidden">PDF</span>
         </motion.button>
       </div>
+
+      {/* Share toast */}
+      <AnimatePresence>
+        {showShareToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-24 right-6 md:bottom-28 md:right-8 bg-green-500 text-white px-6 py-3 rounded-full shadow-xl font-medium text-sm z-50 no-print"
+          >
+            Link kopiert!
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
