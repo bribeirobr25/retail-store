@@ -135,7 +135,7 @@ interface SavedData {
 
 function loadSavedData(): SavedData | null {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = sessionStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : null;
   } catch {
     return null;
@@ -163,6 +163,7 @@ export default function App() {
   const getShareUrl = () => {
     const url = new URL(window.location.href);
     url.searchParams.set('mode', 'shared');
+    url.searchParams.set('lang', lang);
     return url.toString();
   };
 
@@ -209,12 +210,12 @@ export default function App() {
 
   // KPI States
   const [kpis, setKpis] = useState(() => saved?.kpis ?? {
-    vj: '3.878',
-    target: '3.977',
-    targetWeek: '29.782',
-    t1: '128.000',
-    t2: '135.680',
-    ly: '121.000'
+    vj: '00.000',
+    target: '00.000',
+    targetWeek: '00.000',
+    t1: '000.000',
+    t2: '000.000',
+    ly: '000.000'
   });
 
   const [dailyFokus, setDailyFokus] = useState<SectionItem[]>(() =>
@@ -241,7 +242,7 @@ export default function App() {
   // Persist all user data to localStorage
   useEffect(() => {
     const data: SavedData = { team, pausen, todo, kassen, abend, dailyFokus, notes, kpis, rawDate, selectedStore };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [team, pausen, todo, kassen, abend, dailyFokus, notes, kpis, rawDate, selectedStore]);
 
   const addItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, placeholder: Partial<SectionItem>) => {
@@ -479,7 +480,7 @@ export default function App() {
                   onClick={() => !isShared && setShowStoreDropdown(!showStoreDropdown)}
                 >
                   KIKO <span className="text-gray-800 uppercase">{selectedStore.split(' ')[1] || 'MILANO'}</span>
-                  <ChevronDown size={28} className="text-gray-300 group-hover/store:text-purple-400 transition-colors no-print" />
+                  <ChevronDown size={28} className="text-purple-400 group-hover/store:text-pink-500 transition-colors no-print drop-shadow-sm" />
                 </h1>
                 
                 {showStoreDropdown && (
@@ -503,20 +504,22 @@ export default function App() {
             </div>
 
             <div className="flex flex-col items-center gap-2 md:flex-1 relative">
-              <div className="flex rounded-full border border-purple-200 overflow-hidden no-print md:absolute md:top-0 md:right-0">
-                <button
-                  onClick={() => setLang('de')}
-                  className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${lang === 'de' ? 'bg-purple-500 text-white' : 'bg-white/50 text-purple-400 hover:bg-purple-50'}`}
-                >
-                  DE
-                </button>
-                <button
-                  onClick={() => setLang('en')}
-                  className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${lang === 'en' ? 'bg-purple-500 text-white' : 'bg-white/50 text-purple-400 hover:bg-purple-50'}`}
-                >
-                  EN
-                </button>
-              </div>
+              {!isShared && (
+                <div className="flex rounded-full border border-purple-200 overflow-hidden no-print md:absolute md:top-0 md:right-0">
+                  <button
+                    onClick={() => setLang('de')}
+                    className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${lang === 'de' ? 'bg-purple-500 text-white' : 'bg-white/50 text-purple-400 hover:bg-purple-50'}`}
+                  >
+                    DE
+                  </button>
+                  <button
+                    onClick={() => setLang('en')}
+                    className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${lang === 'en' ? 'bg-purple-500 text-white' : 'bg-white/50 text-purple-400 hover:bg-purple-50'}`}
+                  >
+                    EN
+                  </button>
+                </div>
+              )}
               <div className="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] bg-white/50 px-3 py-1 rounded-full border border-purple-100">
                 {t('header.month')}: {currentMonth}
               </div>

@@ -48,6 +48,8 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | null>(null);
 
 function getInitialLang(): Language {
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang === 'en' || urlLang === 'de') return urlLang;
   const stored = localStorage.getItem('lang');
   if (stored === 'en' || stored === 'de') return stored;
   return 'de';

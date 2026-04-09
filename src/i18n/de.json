@@ -64,7 +64,7 @@
       "Premium-Service: Voller Fokus auf eine personalisierte Beratung bei der Wahl des richtigen Foundation-Tons."
     ],
     "team": ["Name", "Name", "Name"],
-    "breaks": ["Name: 12:00 - 13:00"],
+    "breaks": ["Name: 12:00 - 13:00", "Name: 12:30 - 13:30", "Name: 13:00 - 14:00"],
     "todo": [
       "Name \u2013 Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.",
       "Name \u2013 Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.",
@@ -73,7 +73,7 @@
       "Name \u2013 Visual Merchandising (VM): Die Preise im Bereich \u201eLast Chance\u201c aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.",
       "Name \u2013 Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen."
     ],
-    "registers": ["Kasse A: Name"],
+    "registers": ["Kasse A: Name", "Kasse B: Name", "Handy 1: Name"],
     "evening": [
       "Name \u2013 Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität",
       "Name \u2013 Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.",

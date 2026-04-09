@@ -64,7 +64,7 @@
       "Premium service: Full focus on personalized consultation for choosing the right foundation shade."
     ],
     "team": ["Name", "Name", "Name"],
-    "breaks": ["Name: 12:00 PM - 1:00 PM"],
+    "breaks": ["Name: 12:00 - 13:00", "Name: 12:30 - 13:30", "Name: 13:00 - 14:00"],
     "todo": [
       "Name \u2013 Strategic restocking: Keep the lipstick drawers well-stocked during the afternoon rush.",
       "Name \u2013 Tester check: Ensure all testers are clean and have sufficient product.",
@@ -73,7 +73,7 @@
       "Name \u2013 Visual Merchandising (VM): Update prices in the 'Last Chance' area. Clean the main window display (remove fingerprints). Reposition new collection products according to the VM guide. Replace the entrance promotional banner.",
       "Name \u2013 Administration and team: Check regional management emails. Conduct the quick 5-minute training on [New Product]."
     ],
-    "registers": ["Register A: Name"],
+    "registers": ["Register A: Name", "Register B: Name", "Mobile 1: Name"],
     "evening": [
       "Name \u2013 Perform the cash register closing. Prepare the cash bag for bank deposit. PowerBi and hourly productivity",
       "Name \u2013 Tester care and hygiene: Clean and disinfect all lipstick and eyeshadow testers. Sharpen used eye and lip pencils. Clean the makeup tables and mirrors in the store. Wash or replace demonstration sponges and brushes.",
