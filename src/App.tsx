@@ -118,6 +118,30 @@ interface SectionProps {
   readOnly?: boolean;
 }
 
+const STORAGE_KEY = 'retail-store-data';
+
+interface SavedData {
+  team: SectionItem[];
+  pausen: SectionItem[];
+  todo: SectionItem[];
+  kassen: SectionItem[];
+  abend: SectionItem[];
+  dailyFokus: SectionItem[];
+  notes: SectionItem[];
+  kpis: Record<string, string>;
+  rawDate: string;
+  selectedStore: string;
+}
+
+function loadSavedData(): SavedData | null {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function App() {
   const { t, tArray, lang, setLang, locale } = useTranslation();
   const isShared = new URLSearchParams(window.location.search).get('mode') === 'shared';
@@ -162,12 +186,14 @@ export default function App() {
     setShowShareMenu(false);
   };
 
-  const [rawDate, setRawDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedStore, setSelectedStore] = useState('Kiko Taui');
+  const saved = loadSavedData();
+
+  const [rawDate, setRawDate] = useState(() => saved?.rawDate ?? new Date().toISOString().split('T')[0]);
+  const [selectedStore, setSelectedStore] = useState(() => saved?.selectedStore ?? 'Kiko Taui');
   const storeOptions = ["Kiko Taui", "Kiko Alexa", "Kiko Mall", "Kiko Rosenthal", "Kiko Boulevard"];
   const [showStoreDropdown, setShowStoreDropdown] = useState(false);
   const [notes, setNotes] = useState<SectionItem[]>(() =>
-    tArray('defaults.notes').map((text, i) => ({ id: i + 1, text }))
+    saved?.notes ?? tArray('defaults.notes').map((text, i) => ({ id: i + 1, text }))
   );
 
   const formattedDate = new Date(rawDate + 'T12:00:00').toLocaleDateString(locale, {
@@ -180,9 +206,9 @@ export default function App() {
   const currentMonth = new Date(rawDate + 'T12:00:00').toLocaleDateString(locale, {
     month: 'long'
   });
-  
+
   // KPI States
-  const [kpis, setKpis] = useState({
+  const [kpis, setKpis] = useState(() => saved?.kpis ?? {
     vj: '3.878',
     target: '3.977',
     targetWeek: '29.782',
@@ -192,25 +218,31 @@ export default function App() {
   });
 
   const [dailyFokus, setDailyFokus] = useState<SectionItem[]>(() =>
-    tArray('defaults.focus').map((text, i) => ({ id: i + 1, text }))
+    saved?.dailyFokus ?? tArray('defaults.focus').map((text, i) => ({ id: i + 1, text }))
   );
 
   // Section Item States
   const [team, setTeam] = useState<SectionItem[]>(() =>
-    tArray('defaults.team').map((text, i) => ({ id: i + 1, text, iconIndex: randomIconIndex() }))
+    saved?.team ?? tArray('defaults.team').map((text, i) => ({ id: i + 1, text, iconIndex: randomIconIndex() }))
   );
   const [pausen, setPausen] = useState<SectionItem[]>(() =>
-    tArray('defaults.breaks').map((text, i) => ({ id: i + 1, text }))
+    saved?.pausen ?? tArray('defaults.breaks').map((text, i) => ({ id: i + 1, text }))
   );
   const [todo, setTodo] = useState<SectionItem[]>(() =>
-    tArray('defaults.todo').map((text, i) => ({ id: i + 1, text }))
+    saved?.todo ?? tArray('defaults.todo').map((text, i) => ({ id: i + 1, text }))
   );
   const [kassen, setKassen] = useState<SectionItem[]>(() =>
-    tArray('defaults.registers').map((text, i) => ({ id: i + 1, text }))
+    saved?.kassen ?? tArray('defaults.registers').map((text, i) => ({ id: i + 1, text }))
   );
   const [abend, setAbend] = useState<SectionItem[]>(() =>
-    tArray('defaults.evening').map((text, i) => ({ id: i + 1, text }))
+    saved?.abend ?? tArray('defaults.evening').map((text, i) => ({ id: i + 1, text }))
   );
+
+  // Persist all user data to localStorage
+  useEffect(() => {
+    const data: SavedData = { team, pausen, todo, kassen, abend, dailyFokus, notes, kpis, rawDate, selectedStore };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [team, pausen, todo, kassen, abend, dailyFokus, notes, kpis, rawDate, selectedStore]);
 
   const addItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, placeholder: Partial<SectionItem>) => {
     const newItem = { id: Date.now(), ...placeholder, iconIndex: randomIconIndex() } as SectionItem;

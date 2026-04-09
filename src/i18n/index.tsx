@@ -58,7 +58,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((newLang: Language) => {
     localStorage.setItem('lang', newLang);
-    window.location.reload();
+    setLangState(newLang);
   }, []);
 
   const t = useCallback((key: string) => {
