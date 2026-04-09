@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Calendar,
   Users,
-  User,
   Target,
   CheckSquare,
   Moon,
@@ -17,21 +16,87 @@ import {
   Heart,
   Sparkles,
   Coffee,
-  CheckCircle2,
   ChevronDown,
-  History
+  History,
+  Rainbow,
+  Flower,
+  Dog,
+  Squirrel,
+  Cherry,
+  Croissant,
+  Gem,
+  Rocket,
+  Gift,
+  Origami,
+  ScanFace,
+  HatGlasses,
+  TreePalm,
+  FlameKindling,
+  Palette,
+  Handbag,
+  Award,
+  Medal,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-interface TextItem { id: number; text: string }
-interface TaskItem { id: number; name: string; task: string; checked: boolean }
+import svgCat from '../images/svg/cat.svg';
+import svgBall from '../images/svg/ball.svg';
+import svgPuppy from '../images/svg/puppy.svg';
+import svgPrincess from '../images/svg/princess.svg';
+import svgPanda from '../images/svg/panda.svg';
+import svgUnicorn from '../images/svg/unicorn.svg';
+import svgTeacat from '../images/svg/teacat.svg';
+import svgCupcakebear from '../images/svg/cupcakebear.svg';
+import svgRabbit from '../images/svg/rabbit.svg';
+import svgPrinces from '../images/svg/princes.svg';
+
+interface TextItem { id: number; text: string; iconIndex?: number }
+interface TaskItem { id: number; name: string; task: string }
 type SectionItem = TextItem | TaskItem;
+
+type TeamIcon = { type: 'lucide'; icon: LucideIcon } | { type: 'svg'; src: string };
+
+const TEAM_ICONS: TeamIcon[] = [
+  // Custom SVGs
+  { type: 'svg', src: svgCat },
+  { type: 'svg', src: svgBall },
+  { type: 'svg', src: svgPuppy },
+  { type: 'svg', src: svgPrincess },
+  { type: 'svg', src: svgPanda },
+  { type: 'svg', src: svgUnicorn },
+  { type: 'svg', src: svgTeacat },
+  { type: 'svg', src: svgCupcakebear },
+  { type: 'svg', src: svgRabbit },
+  { type: 'svg', src: svgPrinces },
+  // Lucide icons
+  { type: 'lucide', icon: Rainbow },
+  { type: 'lucide', icon: Flower },
+  { type: 'lucide', icon: Dog },
+  { type: 'lucide', icon: Squirrel },
+  { type: 'lucide', icon: Cherry },
+  { type: 'lucide', icon: Croissant },
+  { type: 'lucide', icon: Gem },
+  { type: 'lucide', icon: Rocket },
+  { type: 'lucide', icon: Gift },
+  { type: 'lucide', icon: Origami },
+  { type: 'lucide', icon: ScanFace },
+  { type: 'lucide', icon: HatGlasses },
+  { type: 'lucide', icon: TreePalm },
+  { type: 'lucide', icon: FlameKindling },
+  { type: 'lucide', icon: Palette },
+  { type: 'lucide', icon: Handbag },
+  { type: 'lucide', icon: Award },
+  { type: 'lucide', icon: Medal },
+];
+
+const randomIconIndex = () => Math.floor(Math.random() * TEAM_ICONS.length);
 
 interface EditableInputProps {
   value: string;
   onSave: (val: string) => void;
   className?: string;
   placeholder?: string;
+  formatPrefix?: boolean;
 }
 
 interface SectionProps {
@@ -41,7 +106,6 @@ interface SectionProps {
   setItems: Dispatch<SetStateAction<SectionItem[]>>;
   placeholder: Partial<SectionItem>;
   color: string;
-  isChecklist?: boolean;
   isTask?: boolean;
   isTeam?: boolean;
 }
@@ -62,30 +126,41 @@ export default function App() {
     { id: 8, text: 'Kurzes Training: Technischer Tipp: Die neue Mascara sollte in Zickzack-Bewegungen aufgetragen werden, um mehr Volumen zu erzielen.' },
   ]);
   useEffect(() => {
-    // A4 portrait content area with 8mm margins: (210-16)mm x (297-16)mm = 194x281mm
-    // At 96dpi: width = 194/25.4*96 ≈ 733px, height = 281/25.4*96 ≈ 1063px
-    const A4_PAGE_WIDTH = 733;
-    const A4_PAGE_HEIGHT = 1063;
+    // A4 portrait: 210x297mm. @page margin: 0, wrapper padding: 10mm each side.
+    // Full page at 96dpi: 210/25.4*96 ≈ 793px, 297/25.4*96 ≈ 1123px
+    // Content area (minus 10mm padding each side): 190/25.4*96 ≈ 718px, 277/25.4*96 ≈ 1047px
+    const A4_CONTENT_WIDTH = 718;
+    const A4_CONTENT_HEIGHT = 1047;
 
     const handleBeforePrint = () => {
-      // Reset any previous zoom
-      document.documentElement.style.zoom = '1';
-      // Constrain width to A4 portrait content width to get accurate print-layout height
-      document.documentElement.style.width = A4_PAGE_WIDTH + 'px';
+      const container = document.querySelector('.print-container') as HTMLElement;
+      if (!container) return;
+
+      // Reset zoom to measure natural height
+      container.style.zoom = '1';
+
+      // Constrain to A4 width to get accurate print-layout height
+      document.documentElement.style.width = A4_CONTENT_WIDTH + 'px';
       document.documentElement.style.overflow = 'visible';
-      const contentHeight = document.documentElement.scrollHeight;
+      const contentHeight = container.scrollHeight;
       document.documentElement.style.width = '';
       document.documentElement.style.overflow = '';
-      if (contentHeight > A4_PAGE_HEIGHT) {
-        const scale = A4_PAGE_HEIGHT / contentHeight;
-        document.documentElement.style.zoom = String(scale);
+
+      // Apply zoom only if content overflows the page
+      if (contentHeight > A4_CONTENT_HEIGHT) {
+        container.style.zoom = String(A4_CONTENT_HEIGHT / contentHeight);
+      } else {
+        container.style.zoom = '';
       }
     };
 
     const handleAfterPrint = () => {
-      document.documentElement.style.zoom = '';
       document.documentElement.style.width = '';
       document.documentElement.style.overflow = '';
+      const container = document.querySelector('.print-container') as HTMLElement;
+      if (container) {
+        container.style.zoom = '';
+      }
     };
 
     window.addEventListener('beforeprint', handleBeforePrint);
@@ -130,28 +205,32 @@ export default function App() {
   ]);
 
   // Section Item States
-  const [team, setTeam] = useState<SectionItem[]>([{ id: 1, text: 'Simone' }]);
-  const [pausen, setPausen] = useState<SectionItem[]>([{ id: 1, text: 'Simone: 12:00 - 13:00' }]);
-  const [todo, setTodo] = useState<SectionItem[]>([
-    { id: 1, name: 'Simone', task: 'Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.', checked: false },
-    { id: 2, name: 'Name', task: 'Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.', checked: false },
-    { id: 3, name: 'Name', task: 'Eröffnungsroutine (Opening): Das Licht und das Soundsystem im Geschäft einschalten. Den Kassenanfangsbestand prüfen (Kasse 1 und 2). Spiegel und Make-up-Tische reinigen. Alle Testpinsel und Applikatoren hygienisch reinigen.', checked: false },
-    { id: 4, name: 'Name', task: 'Wartung und Lagerbestand (Maintenance): Die Lippenstifte der Linie [Name der Linie], die gestern ausverkauft waren, wieder auffüllen.', checked: false },
-    { id: 5, name: 'Name', task: 'Visual Merchandising (VM): Die Preise im Bereich „Last Chance" aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.', checked: false },
-    { id: 6, name: 'Name', task: 'Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen.', checked: false },
+  const [team, setTeam] = useState<SectionItem[]>([
+    { id: 1, text: 'Name', iconIndex: randomIconIndex() },
+    { id: 2, text: 'Name', iconIndex: randomIconIndex() },
+    { id: 3, text: 'Name', iconIndex: randomIconIndex() },
   ]);
-  const [kassen, setKassen] = useState<SectionItem[]>([{ id: 1, text: 'Kasse A: Simone' }]);
+  const [pausen, setPausen] = useState<SectionItem[]>([{ id: 1, text: 'Name: 12:00 - 13:00' }]);
+  const [todo, setTodo] = useState<SectionItem[]>([
+    { id: 1, name: 'Name', task: 'Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.' },
+    { id: 2, name: 'Name', task: 'Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.' },
+    { id: 3, name: 'Name', task: 'Eröffnungsroutine (Opening): Das Licht und das Soundsystem im Geschäft einschalten. Den Kassenanfangsbestand prüfen (Kasse 1 und 2). Spiegel und Make-up-Tische reinigen. Alle Testpinsel und Applikatoren hygienisch reinigen.' },
+    { id: 4, name: 'Name', task: 'Wartung und Lagerbestand (Maintenance): Die Lippenstifte der Linie [Name der Linie], die gestern ausverkauft waren, wieder auffüllen.' },
+    { id: 5, name: 'Name', task: 'Visual Merchandising (VM): Die Preise im Bereich „Last Chance" aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.' },
+    { id: 6, name: 'Name', task: 'Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen.' },
+  ]);
+  const [kassen, setKassen] = useState<SectionItem[]>([{ id: 1, text: 'Kasse A: Name' }]);
   const [abend, setAbend] = useState<SectionItem[]>([
-    { id: 1, name: 'Simone', task: 'Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität', checked: false },
-    { id: 2, name: 'Name', task: 'Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.', checked: false },
-    { id: 3, name: 'Name', task: 'Strategische Warenauffüllung (Restock): Die 10 meistverkauften Produkte (Best Seller) in den Regalen auffüllen. Die Schnellzugriffsschubladen unter den Verkaufstheken auffüllen. Prüfen, ob der Bereich „Neuheiten" vollständig und ordentlich ist. Beschädigte Produkte oder Produkte mit verschmutzter Verpackung aus dem Verkaufsbereich entfernen.', checked: false },
-    { id: 4, name: 'Name', task: 'Visual Merchandising (VM): Alle Produkte in den Regalen sauber ausrichten (Facing machen). Die Impulszone an der Kasse ordentlich auffüllen und organisieren. Sicherstellen, dass Preise und Etiketten sichtbar und korrekt sind.', checked: false },
-    { id: 5, name: 'Name', task: 'Sicherheit und operativer Ablauf: Die Innenbeleuchtung ausschalten, nur die notwendige Beleuchtung bzw. Schaufensterbeleuchtung eingeschaltet lassen. Prüfen, ob alle Lagerschubladen und Schränke abgeschlossen sind. Den Müll aus dem Geschäft und aus dem Pausenraum entsorgen. Die Alarmanlage aktivieren und die Haupteingangstür abschließen.', checked: false },
-    { id: 6, name: 'Name', task: 'Kommunikation (Handover): Eine Notiz für die Frühschichtleitung zu besonderen Vorkommnissen hinterlassen. Den finalen KPI des Tages festhalten, zum Beispiel: Wir haben das Ziel für den durchschnittlichen Bonwert erreicht!', checked: false },
+    { id: 1, name: 'Name', task: 'Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität' },
+    { id: 2, name: 'Name', task: 'Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.' },
+    { id: 3, name: 'Name', task: 'Strategische Warenauffüllung (Restock): Die 10 meistverkauften Produkte (Best Seller) in den Regalen auffüllen. Die Schnellzugriffsschubladen unter den Verkaufstheken auffüllen. Prüfen, ob der Bereich „Neuheiten" vollständig und ordentlich ist. Beschädigte Produkte oder Produkte mit verschmutzter Verpackung aus dem Verkaufsbereich entfernen.' },
+    { id: 4, name: 'Name', task: 'Visual Merchandising (VM): Alle Produkte in den Regalen sauber ausrichten (Facing machen). Die Impulszone an der Kasse ordentlich auffüllen und organisieren. Sicherstellen, dass Preise und Etiketten sichtbar und korrekt sind.' },
+    { id: 5, name: 'Name', task: 'Sicherheit und operativer Ablauf: Die Innenbeleuchtung ausschalten, nur die notwendige Beleuchtung bzw. Schaufensterbeleuchtung eingeschaltet lassen. Prüfen, ob alle Lagerschubladen und Schränke abgeschlossen sind. Den Müll aus dem Geschäft und aus dem Pausenraum entsorgen. Die Alarmanlage aktivieren und die Haupteingangstür abschließen.' },
+    { id: 6, name: 'Name', task: 'Kommunikation (Handover): Eine Notiz für die Frühschichtleitung zu besonderen Vorkommnissen hinterlassen. Den finalen KPI des Tages festhalten, zum Beispiel: Wir haben das Ziel für den durchschnittlichen Bonwert erreicht!' },
   ]);
 
   const addItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, placeholder: Partial<SectionItem>) => {
-    const newItem = { id: Date.now(), ...placeholder, checked: false } as SectionItem;
+    const newItem = { id: Date.now(), ...placeholder, iconIndex: randomIconIndex() } as SectionItem;
     setList([...list, newItem]);
   };
 
@@ -163,12 +242,10 @@ export default function App() {
     setList(list.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
 
-  const toggleCheck = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, id: number) => {
-    setList(list.map(item => item.id === id ? { ...item, checked: !('checked' in item) || !item.checked } : item));
-  };
 
-  const EditableInput = ({ value, onSave, className, placeholder }: EditableInputProps) => {
+  const EditableInput = ({ value, onSave, className, placeholder, formatPrefix = false }: EditableInputProps) => {
     const [tempValue, setTempValue] = useState(value);
+    const [isEditing, setIsEditing] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
@@ -176,20 +253,48 @@ export default function App() {
     }, [value]);
 
     useEffect(() => {
-      if (textareaRef.current) {
+      if (isEditing && textareaRef.current) {
         textareaRef.current.style.height = '0px';
         const scrollHeight = textareaRef.current.scrollHeight;
         textareaRef.current.style.height = scrollHeight + 'px';
+        textareaRef.current.focus();
       }
-    }, [tempValue]);
+    }, [tempValue, isEditing]);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         onSave(tempValue);
-        e.currentTarget.blur();
+        setIsEditing(false);
       }
     };
+
+    const handleBlur = () => {
+      onSave(tempValue);
+      setIsEditing(false);
+    };
+
+    // Always render as <div> when not editing — avoids Chromium PDF textarea bug
+    if (!isEditing) {
+      const displayValue = tempValue || '';
+      const colonIndex = displayValue.indexOf(':');
+      const hasPrefix = formatPrefix && colonIndex > 0;
+      return (
+        <div
+          onClick={() => setIsEditing(true)}
+          className={`${className} cursor-text leading-tight whitespace-pre-wrap`}
+        >
+          {hasPrefix ? (
+            <>
+              <span className="font-bold" style={{ fontSize: '1.05em' }}>{displayValue.slice(0, colonIndex + 1)}</span>
+              {displayValue.slice(colonIndex + 1)}
+            </>
+          ) : (
+            displayValue || <span className="text-gray-400">{placeholder}</span>
+          )}
+        </div>
+      );
+    }
 
     return (
       <textarea
@@ -197,7 +302,7 @@ export default function App() {
         value={tempValue}
         placeholder={placeholder}
         onChange={(e) => setTempValue(e.target.value)}
-        onBlur={() => onSave(tempValue)}
+        onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         rows={1}
         className={`${className} resize-none overflow-hidden block leading-tight`}
@@ -205,7 +310,7 @@ export default function App() {
     );
   };
 
-  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isChecklist = false, isTask = false, isTeam = false }: SectionProps) => (
+  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isTask = false, isTeam = false }: SectionProps) => (
     <motion.section 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -233,41 +338,42 @@ export default function App() {
               exit={{ opacity: 0, scale: 0.9 }}
               className={`flex items-center gap-3 group/item relative ${isTeam ? 'bg-white/50 p-2 rounded-xl border border-white/50 shadow-sm min-w-30' : ''}`}
             >
-              {isChecklist && 'checked' in item && (
-                <button
-                  onClick={() => toggleCheck(items, setItems, item.id)}
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${item.checked ? 'bg-green-400 border-green-400' : 'border-gray-300'}`}
-                >
-                  {item.checked && <CheckCircle2 size={12} className="text-white" />}
-                </button>
-              )}
-
-              {isTeam && (
-                <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500">
-                  <User size={16} />
-                </div>
-              )}
+              {isTeam && (() => {
+                const idx = 'iconIndex' in item && typeof item.iconIndex === 'number' ? item.iconIndex : 0;
+                const teamIcon = TEAM_ICONS[idx % TEAM_ICONS.length];
+                return (
+                  <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 overflow-hidden">
+                    {teamIcon.type === 'svg' ? (
+                      <img src={teamIcon.src} alt="" className="w-6 h-6 object-contain" />
+                    ) : (
+                      <teamIcon.icon size={16} />
+                    )}
+                  </div>
+                );
+              })()}
 
               {isTask && 'name' in item ? (
-                <div className="flex flex-1 gap-2">
+                <div className="flex flex-1 gap-2 task-name-row">
                   <EditableInput
                     placeholder="Nome"
                     value={item.name}
                     onSave={(val: string) => updateItem(items, setItems, item.id, 'name', val)}
-                    className={`w-1/3 bg-transparent border-none p-0 text-sm font-black text-pink-500 uppercase tracking-widest focus:ring-0 ${item.checked ? 'text-gray-300' : ''}`}
+                    className="shrink-0 bg-transparent border-none p-0 text-sm font-black text-pink-500 uppercase tracking-widest focus:ring-0"
                   />
                   <EditableInput
                     placeholder="Tarefa"
                     value={item.task}
                     onSave={(val: string) => updateItem(items, setItems, item.id, 'task', val)}
-                    className={`flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 ${item.checked ? 'text-gray-400 line-through' : 'text-gray-700'}`}
+                    className="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-gray-700"
+                    formatPrefix
                   />
                 </div>
               ) : 'text' in item ? (
                 <EditableInput
                   value={item.text}
                   onSave={(val: string) => updateItem(items, setItems, item.id, 'text', val)}
-                  className={`flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 ${'checked' in item && item.checked ? 'text-gray-400 line-through' : 'text-gray-700'}`}
+                  className="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-gray-700"
+                  formatPrefix={!isTeam}
                 />
               ) : null}
 
@@ -452,7 +558,6 @@ export default function App() {
                 setItems={setTodo} 
                 placeholder={{ name: 'Name', task: 'Task' }}
                 color="border-blue-200"
-                isChecklist={true}
                 isTask={true}
               />
             </div>
@@ -490,7 +595,6 @@ export default function App() {
                 setItems={setAbend} 
                 placeholder={{ name: 'Name', task: 'Task' }}
                 color="border-indigo-200"
-                isChecklist={true}
                 isTask={true}
               />
             </div>

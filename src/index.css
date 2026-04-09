@@ -31,7 +31,7 @@
 
 @page {
   size: A4 portrait;
-  margin: 6mm;
+  margin: 0;
 }
 
 @media print {
@@ -43,20 +43,31 @@
     display: none !important;
   }
 
-  /* Keep the gradient background on body */
   body {
     background: linear-gradient(135deg, #fdfcfb 0%, #e2d1f9 100%) !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  /* Outer container — keep rounded corners and shadow look */
+  /* Page wrapper — fill page with margins */
+  body > div#root > div {
+    min-height: 100vh !important;
+    padding: 10mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Outer container — fill page, visual style */
   .print-container {
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    min-height: auto !important;
-    border-radius: 24px !important;
+    min-height: 0 !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    border-radius: 20px !important;
     border: 3px solid rgba(255, 255, 255, 0.5) !important;
     background: rgba(255, 255, 255, 0.7) !important;
     backdrop-filter: none !important;
@@ -64,7 +75,7 @@
     box-shadow: 0 10px 25px -5px rgba(227, 0, 79, 0.15), 0 8px 10px -6px rgba(227, 0, 79, 0.08) !important;
   }
 
-  /* Glass cards — simulate frosted glass with solid semi-transparent bg */
+  /* Glass cards — frosted glass look */
   .glass-card {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -73,52 +84,82 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03) !important;
   }
 
-  /* Header — keep the gradient and rounded corners */
+  /* ===== TOP BANNER — fixed 200px height ===== */
   header {
-    padding: 10px 20px !important;
+    height: 200px !important;
+    min-height: 200px !important;
+    padding: 0 32px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
     background: linear-gradient(to right, #e2d1f9, #fdfcfb, #e2d1f9) !important;
-    border-radius: 20px !important;
-    margin: 8px 10px 0 10px !important;
+    border-radius: 18px !important;
+    margin: 10px 16px 0 16px !important;
   }
   /* Force header inner layout to row */
   header > div:last-child {
     flex-direction: row !important;
     align-items: center !important;
-    gap: 1rem !important;
+    justify-content: space-between !important;
+    gap: 1.5rem !important;
   }
   header > div:last-child > div:first-child {
     text-align: left !important;
   }
-  /* Center "Monat" label above LY/T1/T2 */
   header > div:last-child > div:last-child {
     align-items: center !important;
+    margin-right: 8px !important;
+  }
+  /* Date — 16px */
+  header .tracking-widest {
+    font-size: 16px !important;
+  }
+  /* Month title — 14px */
+  header .tracking-\[0\.2em\] {
+    font-size: 14px !important;
+  }
+  /* LY/T1/T2 labels — 12px */
+  header .glass-card .tracking-widest {
+    font-size: 12px !important;
+  }
+  /* LY/T1/T2 values — 1.375rem (~22px) */
+  header .glass-card .font-funny {
+    font-size: 1.375rem !important;
+  }
+  /* LY/T1/T2 header icons — 36x36 */
+  header .glass-card svg {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  /* KPI cards in header — larger */
+  header .glass-card {
+    padding: 10px !important;
+    min-width: 100px !important;
   }
 
-  /* Main grid — 2 columns with compact spacing */
+  /* ===== BODY — 30px top gap, 50px column gap, 50px row gap ===== */
   main {
-    padding: 10px 14px 6px 14px !important;
-    gap: 10px !important;
-    column-gap: 14px !important;
+    padding: 30px 20px 20px 20px !important;
+    column-gap: 50px !important;
+    display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
   }
-  /* Force column wrappers to flex column */
   main > div.contents {
     display: flex !important;
     flex-direction: column !important;
-    gap: 10px !important;
+    gap: 50px !important;
   }
 
-  /* Section cards — keep colored borders and rounded corners */
+  /* ===== SECTION CARDS ===== */
   section {
-    padding: 8px 12px !important;
-    border-radius: 20px !important;
+    padding: 14px 18px !important;
+    border-radius: 18px !important;
     border-width: 2px !important;
     border-style: solid !important;
     border-color: #e5e7eb !important;
     background: rgba(255, 255, 255, 0.75) !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03) !important;
   }
-  /* Preserve Tailwind section border colors */
   section.border-yellow-200 { border-color: #fef08a !important; }
   section.border-pink-200 { border-color: #fbcfe8 !important; }
   section.border-pink-100 { border-color: #fce7f3 !important; }
@@ -131,15 +172,61 @@
     break-inside: avoid;
     page-break-inside: avoid;
   }
+
+  /* Card titles — 18px */
   section h2 {
-    margin-bottom: 4px !important;
-    font-size: 13px !important;
+    margin-bottom: 8px !important;
+    font-size: 18px !important;
   }
+  /* Icons next to card titles — 36x36 */
+  section h2 svg {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Card text/content — 12px, line-height 1.6 */
   textarea {
     border: none !important;
     background: transparent !important;
     resize: none !important;
     padding: 0 !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+  }
+  section .cursor-text {
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+  }
+  /* NAME labels (To Do/Abend) — 12px */
+  section .tracking-widest {
+    font-size: 12px !important;
+  }
+  /* Gap between NAME and text in To Do/Abend — 50px */
+  section .task-name-row {
+    gap: 50px !important;
+  }
+  /* Item spacing within cards */
+  section .space-y-3 > * + * {
+    margin-top: 6px !important;
+  }
+
+  /* Team member icons — 48px circle, 36px icon */
+  section .rounded-full.bg-pink-100 {
+    width: 48px !important;
+    height: 48px !important;
+  }
+  section .rounded-full.bg-pink-100 svg {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  section .rounded-full.bg-pink-100 img {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Today's Target / LY / Week's Target icons in body — 36x36 */
+  main .glass-card svg {
+    width: 36px !important;
+    height: 36px !important;
   }
 }
