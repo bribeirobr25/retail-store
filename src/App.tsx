@@ -333,7 +333,7 @@ export default function App() {
     <motion.section 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`glass-card p-5 md:p-8 rounded-3xl border-2 ${color} relative overflow-hidden group`}
+      className={`glass-card p-5 md:p-6 lg:p-8 rounded-3xl border-2 ${color} relative overflow-hidden group`}
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-funny flex items-center gap-2 tracking-wide text-gray-800">
@@ -489,7 +489,7 @@ export default function App() {
                 {t('header.month')}: {currentMonth}
               </div>
               <div className="flex gap-3">
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[110px]">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[90px] lg:min-w-[110px]">
                   <History className="text-blue-500 mb-1" size={18} />
                   <EditableInput
                     value={kpis.ly}
@@ -499,7 +499,7 @@ export default function App() {
                   />
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('kpi.ly')}</span>
                 </div>
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[110px]">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[90px] lg:min-w-[110px]">
                   <Star className="text-yellow-500 mb-1" size={18} />
                   <EditableInput
                     value={kpis.t1}
@@ -509,7 +509,7 @@ export default function App() {
                   />
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('kpi.t1')}</span>
                 </div>
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[110px]">
+                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[90px] lg:min-w-[110px]">
                   <Sparkles className="text-orange-500 mb-1" size={18} />
                   <EditableInput
                     value={kpis.t2}
@@ -525,11 +525,11 @@ export default function App() {
         </header>
 
         {/* Main Content Grid - Two Independent Columns with Mobile Reordering */}
-        <main className="px-4 py-6 md:px-10 md:py-12 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-32 md:gap-y-16 items-start">
+        <main className="px-4 py-6 md:px-6 lg:px-10 md:py-8 lg:py-12 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-6 lg:gap-x-32 md:gap-y-8 lg:gap-y-16 items-start">
           {/* Left Column: KPIs, Team, Pausen, To Do */}
-          <div className="contents md:flex md:flex-col md:gap-14">
+          <div className="contents md:flex md:flex-col md:gap-6 lg:gap-14">
             <div className="order-1">
-              <div className="grid grid-cols-3 gap-3 md:gap-6">
+              <div className="grid grid-cols-3 gap-3 md:gap-4 lg:gap-6">
                 {[
                   { label: t('kpi.todaysTarget'), value: kpis.target, key: 'target', icon: Target, color: 'text-blue-500' },
                   { label: t('kpi.lastYear'), value: kpis.vj, key: 'vj', icon: History, color: 'text-pink-500' },
@@ -594,7 +594,7 @@ export default function App() {
           </div>
 
           {/* Right Column: Daily Fokus, Kassen, Abend, Note */}
-          <div className="contents md:flex md:flex-col md:gap-14">
+          <div className="contents md:flex md:flex-col md:gap-6 lg:gap-14">
             <div className="order-2">
               <Section 
                 title={t('sections.dailyFocus')}
