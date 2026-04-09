@@ -27,11 +27,18 @@
   .bubbly-shadow {
     box-shadow: 0 10px 25px -5px rgba(227, 0, 79, 0.2), 0 8px 10px -6px rgba(227, 0, 79, 0.1);
   }
+  .print-columns {
+    columns: 2;
+    column-gap: 20px;
+  }
+  .print-columns > * {
+    break-inside: avoid;
+  }
 }
 
 @page {
   size: A4 portrait;
-  margin: 0;
+  margin: 10mm;
 }
 
 @media print {
@@ -49,24 +56,17 @@
     padding: 0 !important;
   }
 
-  /* Page wrapper — fill page with margins */
+  /* Page wrapper */
   body > div#root > div {
-    min-height: 100vh !important;
-    padding: 10mm !important;
-    display: flex !important;
-    flex-direction: column !important;
-    box-sizing: border-box !important;
+    padding: 0 !important;
   }
 
-  /* Outer container — fill page, visual style */
+  /* Outer container — visual style, natural height */
   .print-container {
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    min-height: 0 !important;
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
+    min-height: auto !important;
     border-radius: 20px !important;
     border: 3px solid rgba(255, 255, 255, 0.5) !important;
     background: rgba(255, 255, 255, 0.7) !important;
@@ -110,9 +110,13 @@
     align-items: center !important;
     margin-right: 8px !important;
   }
-  /* Date — 16px */
+  /* Store name — clamp 32px min, 5vw fluid, 40px max */
+  header .iridescent-text {
+    font-size: clamp(32px, 5vw, 40px) !important;
+  }
+  /* Date — 14px */
   header .tracking-widest {
-    font-size: 16px !important;
+    font-size: 14px !important;
   }
   /* Month title — 14px */
   header .tracking-\[0\.2em\] {
@@ -122,14 +126,14 @@
   header .glass-card .tracking-widest {
     font-size: 12px !important;
   }
-  /* LY/T1/T2 values — 1.375rem (~22px) */
+  /* LY/T1/T2 values — 18px */
   header .glass-card .font-funny {
-    font-size: 1.375rem !important;
+    font-size: 18px !important;
   }
-  /* LY/T1/T2 header icons — 36x36 */
+  /* LY/T1/T2 header icons — 24x24 */
   header .glass-card svg {
-    width: 36px !important;
-    height: 36px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
   /* KPI cards in header — larger */
   header .glass-card {
@@ -137,17 +141,17 @@
     min-width: 100px !important;
   }
 
-  /* ===== BODY — 30px top gap, 50px column gap, 50px row gap ===== */
+  /* ===== BODY — 30px top gap, 30px column gap, 30px row gap ===== */
   main {
     padding: 30px 20px 20px 20px !important;
-    column-gap: 50px !important;
+    column-gap: 30px !important;
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
   }
   main > div.contents {
     display: flex !important;
     flex-direction: column !important;
-    gap: 50px !important;
+    gap: 30px !important;
   }
 
   /* ===== SECTION CARDS ===== */
@@ -168,20 +172,16 @@
   section.border-indigo-200 { border-color: #c7d2fe !important; }
   section.border-gray-200 { border-color: #e5e7eb !important; }
 
-  section, .glass-card {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
 
-  /* Card titles — 18px */
+  /* Card titles — 14px */
   section h2 {
     margin-bottom: 8px !important;
-    font-size: 18px !important;
+    font-size: 14px !important;
   }
-  /* Icons next to card titles — 36x36 */
+  /* Icons next to card titles — 24x24 */
   section h2 svg {
-    width: 36px !important;
-    height: 36px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
 
   /* Card text/content — 12px, line-height 1.6 */
@@ -201,32 +201,29 @@
   section .tracking-widest {
     font-size: 12px !important;
   }
-  /* Gap between NAME and text in To Do/Abend — 50px */
-  section .task-name-row {
-    gap: 50px !important;
-  }
+
   /* Item spacing within cards */
   section .space-y-3 > * + * {
     margin-top: 6px !important;
   }
 
-  /* Team member icons — 48px circle, 36px icon */
+  /* Team member icons — 24px circle, 16px icon */
   section .rounded-full.bg-pink-100 {
-    width: 48px !important;
-    height: 48px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
   section .rounded-full.bg-pink-100 svg {
-    width: 36px !important;
-    height: 36px !important;
+    width: 16px !important;
+    height: 16px !important;
   }
   section .rounded-full.bg-pink-100 img {
-    width: 36px !important;
-    height: 36px !important;
+    width: 18px !important;
+    height: 18px !important;
   }
 
-  /* Today's Target / LY / Week's Target icons in body — 36x36 */
+  /* Today's Target / LY / Week's Target icons in body — 24x24 */
   main .glass-card svg {
-    width: 36px !important;
-    height: 36px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
 }

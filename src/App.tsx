@@ -51,8 +51,7 @@ import svgRabbit from '../images/svg/rabbit.svg';
 import svgPrinces from '../images/svg/princes.svg';
 
 interface TextItem { id: number; text: string; iconIndex?: number }
-interface TaskItem { id: number; name: string; task: string }
-type SectionItem = TextItem | TaskItem;
+type SectionItem = TextItem;
 
 type TeamIcon = { type: 'lucide'; icon: LucideIcon } | { type: 'svg'; src: string };
 
@@ -97,6 +96,7 @@ interface EditableInputProps {
   className?: string;
   placeholder?: string;
   formatPrefix?: boolean;
+  formatDash?: boolean;
 }
 
 interface SectionProps {
@@ -106,8 +106,9 @@ interface SectionProps {
   setItems: Dispatch<SetStateAction<SectionItem[]>>;
   placeholder: Partial<SectionItem>;
   color: string;
-  isTask?: boolean;
   isTeam?: boolean;
+  printColumns?: boolean;
+  formatDash?: boolean;
 }
 
 export default function App() {
@@ -125,52 +126,7 @@ export default function App() {
     { id: 7, text: 'Kommunikation zwischen den Schichten: Achtung: Die Schublade an Kasse 1 klemmt etwas.' },
     { id: 8, text: 'Kurzes Training: Technischer Tipp: Die neue Mascara sollte in Zickzack-Bewegungen aufgetragen werden, um mehr Volumen zu erzielen.' },
   ]);
-  useEffect(() => {
-    // A4 portrait: 210x297mm. @page margin: 0, wrapper padding: 10mm each side.
-    // Full page at 96dpi: 210/25.4*96 ≈ 793px, 297/25.4*96 ≈ 1123px
-    // Content area (minus 10mm padding each side): 190/25.4*96 ≈ 718px, 277/25.4*96 ≈ 1047px
-    const A4_CONTENT_WIDTH = 718;
-    const A4_CONTENT_HEIGHT = 1047;
 
-    const handleBeforePrint = () => {
-      const container = document.querySelector('.print-container') as HTMLElement;
-      if (!container) return;
-
-      // Reset zoom to measure natural height
-      container.style.zoom = '1';
-
-      // Constrain to A4 width to get accurate print-layout height
-      document.documentElement.style.width = A4_CONTENT_WIDTH + 'px';
-      document.documentElement.style.overflow = 'visible';
-      const contentHeight = container.scrollHeight;
-      document.documentElement.style.width = '';
-      document.documentElement.style.overflow = '';
-
-      // Apply zoom only if content overflows the page
-      if (contentHeight > A4_CONTENT_HEIGHT) {
-        container.style.zoom = String(A4_CONTENT_HEIGHT / contentHeight);
-      } else {
-        container.style.zoom = '';
-      }
-    };
-
-    const handleAfterPrint = () => {
-      document.documentElement.style.width = '';
-      document.documentElement.style.overflow = '';
-      const container = document.querySelector('.print-container') as HTMLElement;
-      if (container) {
-        container.style.zoom = '';
-      }
-    };
-
-    window.addEventListener('beforeprint', handleBeforePrint);
-    window.addEventListener('afterprint', handleAfterPrint);
-    return () => {
-      window.removeEventListener('beforeprint', handleBeforePrint);
-      window.removeEventListener('afterprint', handleAfterPrint);
-    };
-  }, []);
-  
   const formattedDate = new Date(rawDate + 'T12:00:00').toLocaleDateString('de-DE', { 
     weekday: 'long', 
     year: 'numeric', 
@@ -212,21 +168,21 @@ export default function App() {
   ]);
   const [pausen, setPausen] = useState<SectionItem[]>([{ id: 1, text: 'Name: 12:00 - 13:00' }]);
   const [todo, setTodo] = useState<SectionItem[]>([
-    { id: 1, name: 'Name', task: 'Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.' },
-    { id: 2, name: 'Name', task: 'Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.' },
-    { id: 3, name: 'Name', task: 'Eröffnungsroutine (Opening): Das Licht und das Soundsystem im Geschäft einschalten. Den Kassenanfangsbestand prüfen (Kasse 1 und 2). Spiegel und Make-up-Tische reinigen. Alle Testpinsel und Applikatoren hygienisch reinigen.' },
-    { id: 4, name: 'Name', task: 'Wartung und Lagerbestand (Maintenance): Die Lippenstifte der Linie [Name der Linie], die gestern ausverkauft waren, wieder auffüllen.' },
-    { id: 5, name: 'Name', task: 'Visual Merchandising (VM): Die Preise im Bereich „Last Chance" aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.' },
-    { id: 6, name: 'Name', task: 'Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen.' },
+    { id: 1, text: 'Name – Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.' },
+    { id: 2, text: 'Name – Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.' },
+    { id: 3, text: 'Name – Eröffnungsroutine (Opening): Das Licht und das Soundsystem im Geschäft einschalten. Den Kassenanfangsbestand prüfen (Kasse 1 und 2). Spiegel und Make-up-Tische reinigen. Alle Testpinsel und Applikatoren hygienisch reinigen.' },
+    { id: 4, text: 'Name – Wartung und Lagerbestand (Maintenance): Die Lippenstifte der Linie [Name der Linie], die gestern ausverkauft waren, wieder auffüllen.' },
+    { id: 5, text: 'Name – Visual Merchandising (VM): Die Preise im Bereich „Last Chance" aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.' },
+    { id: 6, text: 'Name – Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen.' },
   ]);
   const [kassen, setKassen] = useState<SectionItem[]>([{ id: 1, text: 'Kasse A: Name' }]);
   const [abend, setAbend] = useState<SectionItem[]>([
-    { id: 1, name: 'Name', task: 'Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität' },
-    { id: 2, name: 'Name', task: 'Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.' },
-    { id: 3, name: 'Name', task: 'Strategische Warenauffüllung (Restock): Die 10 meistverkauften Produkte (Best Seller) in den Regalen auffüllen. Die Schnellzugriffsschubladen unter den Verkaufstheken auffüllen. Prüfen, ob der Bereich „Neuheiten" vollständig und ordentlich ist. Beschädigte Produkte oder Produkte mit verschmutzter Verpackung aus dem Verkaufsbereich entfernen.' },
-    { id: 4, name: 'Name', task: 'Visual Merchandising (VM): Alle Produkte in den Regalen sauber ausrichten (Facing machen). Die Impulszone an der Kasse ordentlich auffüllen und organisieren. Sicherstellen, dass Preise und Etiketten sichtbar und korrekt sind.' },
-    { id: 5, name: 'Name', task: 'Sicherheit und operativer Ablauf: Die Innenbeleuchtung ausschalten, nur die notwendige Beleuchtung bzw. Schaufensterbeleuchtung eingeschaltet lassen. Prüfen, ob alle Lagerschubladen und Schränke abgeschlossen sind. Den Müll aus dem Geschäft und aus dem Pausenraum entsorgen. Die Alarmanlage aktivieren und die Haupteingangstür abschließen.' },
-    { id: 6, name: 'Name', task: 'Kommunikation (Handover): Eine Notiz für die Frühschichtleitung zu besonderen Vorkommnissen hinterlassen. Den finalen KPI des Tages festhalten, zum Beispiel: Wir haben das Ziel für den durchschnittlichen Bonwert erreicht!' },
+    { id: 1, text: 'Name – Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität' },
+    { id: 2, text: 'Name – Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.' },
+    { id: 3, text: 'Name – Strategische Warenauffüllung (Restock): Die 10 meistverkauften Produkte (Best Seller) in den Regalen auffüllen. Die Schnellzugriffsschubladen unter den Verkaufstheken auffüllen. Prüfen, ob der Bereich „Neuheiten" vollständig und ordentlich ist. Beschädigte Produkte oder Produkte mit verschmutzter Verpackung aus dem Verkaufsbereich entfernen.' },
+    { id: 4, text: 'Name – Visual Merchandising (VM): Alle Produkte in den Regalen sauber ausrichten (Facing machen). Die Impulszone an der Kasse ordentlich auffüllen und organisieren. Sicherstellen, dass Preise und Etiketten sichtbar und korrekt sind.' },
+    { id: 5, text: 'Name – Sicherheit und operativer Ablauf: Die Innenbeleuchtung ausschalten, nur die notwendige Beleuchtung bzw. Schaufensterbeleuchtung eingeschaltet lassen. Prüfen, ob alle Lagerschubladen und Schränke abgeschlossen sind. Den Müll aus dem Geschäft und aus dem Pausenraum entsorgen. Die Alarmanlage aktivieren und die Haupteingangstür abschließen.' },
+    { id: 6, text: 'Name – Kommunikation (Handover): Eine Notiz für die Frühschichtleitung zu besonderen Vorkommnissen hinterlassen. Den finalen KPI des Tages festhalten, zum Beispiel: Wir haben das Ziel für den durchschnittlichen Bonwert erreicht!' },
   ]);
 
   const addItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, placeholder: Partial<SectionItem>) => {
@@ -243,7 +199,7 @@ export default function App() {
   };
 
 
-  const EditableInput = ({ value, onSave, className, placeholder, formatPrefix = false }: EditableInputProps) => {
+  const EditableInput = ({ value, onSave, className, placeholder, formatPrefix = false, formatDash = false }: EditableInputProps) => {
     const [tempValue, setTempValue] = useState(value);
     const [isEditing, setIsEditing] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -277,6 +233,42 @@ export default function App() {
     // Always render as <div> when not editing — avoids Chromium PDF textarea bug
     if (!isEditing) {
       const displayValue = tempValue || '';
+
+      // Format dash: "NAME – content" with NAME in pink uppercase bold
+      if (formatDash) {
+        const dashIndex = displayValue.indexOf(' – ');
+        const hasDash = dashIndex > 0;
+        return (
+          <div
+            onClick={() => setIsEditing(true)}
+            className={`${className} cursor-text leading-tight whitespace-pre-wrap`}
+          >
+            {hasDash ? (
+              <>
+                <span className="font-black text-pink-500 uppercase tracking-widest">{displayValue.slice(0, dashIndex)}</span>
+                <span> – </span>
+                {(() => {
+                  const content = displayValue.slice(dashIndex + 3);
+                  const colonIdx = content.indexOf(':');
+                  if (colonIdx > 0) {
+                    return (
+                      <>
+                        <span className="font-bold" style={{ fontSize: '1.05em' }}>{content.slice(0, colonIdx + 1)}</span>
+                        {content.slice(colonIdx + 1)}
+                      </>
+                    );
+                  }
+                  return content;
+                })()}
+              </>
+            ) : (
+              displayValue || <span className="text-gray-400">{placeholder}</span>
+            )}
+          </div>
+        );
+      }
+
+      // Format prefix: "Label: content" with label in bold
       const colonIndex = displayValue.indexOf(':');
       const hasPrefix = formatPrefix && colonIndex > 0;
       return (
@@ -310,7 +302,7 @@ export default function App() {
     );
   };
 
-  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isTask = false, isTeam = false }: SectionProps) => (
+  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isTeam = false, printColumns = false, formatDash = false }: SectionProps) => (
     <motion.section 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -328,7 +320,7 @@ export default function App() {
           <Plus size={18} />
         </button>
       </div>
-      <div className={`${isTeam ? 'flex flex-wrap gap-3' : 'space-y-3'}`}>
+      <div className={`${isTeam ? 'flex flex-wrap gap-3' : 'space-y-3'} ${printColumns ? 'print-columns' : ''}`}>
         <AnimatePresence>
           {items.map((item) => (
             <motion.div 
@@ -339,7 +331,7 @@ export default function App() {
               className={`flex items-center gap-3 group/item relative ${isTeam ? 'bg-white/50 p-2 rounded-xl border border-white/50 shadow-sm min-w-30' : ''}`}
             >
               {isTeam && (() => {
-                const idx = 'iconIndex' in item && typeof item.iconIndex === 'number' ? item.iconIndex : 0;
+                const idx = typeof item.iconIndex === 'number' ? item.iconIndex : 0;
                 const teamIcon = TEAM_ICONS[idx % TEAM_ICONS.length];
                 return (
                   <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 overflow-hidden">
@@ -352,30 +344,13 @@ export default function App() {
                 );
               })()}
 
-              {isTask && 'name' in item ? (
-                <div className="flex flex-1 gap-2 task-name-row">
-                  <EditableInput
-                    placeholder="Nome"
-                    value={item.name}
-                    onSave={(val: string) => updateItem(items, setItems, item.id, 'name', val)}
-                    className="shrink-0 bg-transparent border-none p-0 text-sm font-black text-pink-500 uppercase tracking-widest focus:ring-0"
-                  />
-                  <EditableInput
-                    placeholder="Tarefa"
-                    value={item.task}
-                    onSave={(val: string) => updateItem(items, setItems, item.id, 'task', val)}
-                    className="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-gray-700"
-                    formatPrefix
-                  />
-                </div>
-              ) : 'text' in item ? (
-                <EditableInput
-                  value={item.text}
-                  onSave={(val: string) => updateItem(items, setItems, item.id, 'text', val)}
-                  className="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-gray-700"
-                  formatPrefix={!isTeam}
-                />
-              ) : null}
+              <EditableInput
+                value={item.text}
+                onSave={(val: string) => updateItem(items, setItems, item.id, 'text', val)}
+                className="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-gray-700"
+                formatPrefix={!isTeam && !formatDash}
+                formatDash={formatDash}
+              />
 
               <button 
                 onClick={() => removeItem(items, setItems, item.id)}
@@ -547,18 +522,19 @@ export default function App() {
                 setItems={setPausen} 
                 placeholder={{ text: 'Name: 13:00 - 14:00' }}
                 color="border-pink-200"
+                printColumns
               />
             </div>
 
             <div className="order-6">
               <Section 
-                title="To Do" 
-                icon={CheckSquare} 
-                items={todo} 
-                setItems={setTodo} 
-                placeholder={{ name: 'Name', task: 'Task' }}
+                title="To Do"
+                icon={CheckSquare}
+                items={todo}
+                setItems={setTodo}
+                placeholder={{ text: 'Name – Task' }}
                 color="border-blue-200"
-                isTask={true}
+                formatDash
               />
             </div>
           </div>
@@ -584,18 +560,19 @@ export default function App() {
                 setItems={setKassen} 
                 placeholder={{ text: 'Kasse A/B: Name' }}
                 color="border-purple-200"
+                printColumns
               />
             </div>
 
             <div className="order-7">
               <Section 
-                title="Abend" 
-                icon={Moon} 
-                items={abend} 
-                setItems={setAbend} 
-                placeholder={{ name: 'Name', task: 'Task' }}
+                title="Abend"
+                icon={Moon}
+                items={abend}
+                setItems={setAbend}
+                placeholder={{ text: 'Name – Task' }}
                 color="border-indigo-200"
-                isTask={true}
+                formatDash
               />
             </div>
 
