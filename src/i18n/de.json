@@ -42,45 +42,12 @@
     "whatsappText": "Tagesplan: "
   },
   "defaults": {
-    "notes": [
-      "Kundenfeedback: Die Kundin hat den Service von [Name] heute sehr gelobt",
-      "Kundenfeedback: Mehrere Kundinnen fragen nach der Nachlieferung des Lippenstifts [Farbe/Modell].",
-      "Operative Erinnerungen: Die Lampe im Lager austauschen.",
-      "Operative Erinnerungen: Bei der nächsten Bestellung mehr mittelgroße Tüten anfordern.",
-      "Produkt-Highlights: Produkt des Tages: [Produktname] die Vorteile der Feuchtigkeitsversorgung erklären.",
-      "Ziele und Motivation: Es fehlen nur noch 200 \u20ac, um unser zusätzliches Wochenziel zu erreichen!",
-      "Kommunikation zwischen den Schichten: Achtung: Die Schublade an Kasse 1 klemmt etwas.",
-      "Kurzes Training: Technischer Tipp: Die neue Mascara sollte in Zickzack-Bewegungen aufgetragen werden, um mehr Volumen zu erzielen."
-    ],
-    "focus": [
-      "KPIs: KikoME > 35%; CR > 33%; UPT > 2.5%",
-      "Erhöhung des durchschnittlichen Bonwerts: Zu jedem verkauften Lippenstift einen Lipliner anbieten.",
-      "Zusatzverkauf (Cross-Selling): Nach jedem Verkauf von Foundation oder Puder einen Make-up-Fixierer empfehlen.",
-      "Fokus auf Neuheiten: Die neue Kollektion [Name der Kollektion] allen Kundinnen vorstellen.",
-      "Star-Produkt: Heute liegt der Fokus auf der Mascara [Name] \u2013 Ziel: 15 Stück.",
-      "Skincare: Das feuchtigkeitsspendende Serum bei jeder Kundin auf dem Handrücken demonstrieren.",
-      "Aktive Demonstration: Heute mindestens 5 Flash-Make-ups durchführen.",
-      "Kundenbindung: Sicherstellen, dass 100 % der Kundinnen über das Treueprogramm Kiko Rewards informiert sind.",
-      "Premium-Service: Voller Fokus auf eine personalisierte Beratung bei der Wahl des richtigen Foundation-Tons."
-    ],
-    "team": ["Name", "Name", "Name"],
-    "breaks": ["Name: 12:00 - 13:00", "Name: 12:30 - 13:30", "Name: 13:00 - 14:00"],
-    "todo": [
-      "Name \u2013 Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten.",
-      "Name \u2013 Tester-Check: Sicherstellen, dass alle Tester sauber sind und ausreichend Produkt enthalten.",
-      "Name \u2013 Eröffnungsroutine (Opening): Das Licht und das Soundsystem im Geschäft einschalten. Den Kassenanfangsbestand prüfen (Kasse 1 und 2). Spiegel und Make-up-Tische reinigen. Alle Testpinsel und Applikatoren hygienisch reinigen.",
-      "Name \u2013 Wartung und Lagerbestand (Maintenance): Die Lippenstifte der Linie [Name der Linie], die gestern ausverkauft waren, wieder auffüllen.",
-      "Name \u2013 Visual Merchandising (VM): Die Preise im Bereich \u201eLast Chance\u201c aktualisieren. Das Hauptschaufenster reinigen (Fingerabdrücke entfernen). Die Produkte der neuen Kollektion gemäß dem VM-Leitfaden neu platzieren. Das Werbebanner am Eingang austauschen.",
-      "Name \u2013 Administration und Team: Die E-Mails des Regionalmanagements prüfen. Die kurze 5-Minuten-Schulung zu [Neues Produkt] durchführen."
-    ],
-    "registers": ["Kasse A: Name", "Kasse B: Name", "Handy 1: Name"],
-    "evening": [
-      "Name \u2013 Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität",
-      "Name \u2013 Pflege der Tester und Hygiene: Alle Tester von Lippenstiften und Lidschatten reinigen und desinfizieren. Die benutzten Augen- und Lippenstifte anspitzen. Die Make-up-Tische und Spiegel im Geschäft reinigen. Die Demonstrationsschwämme und -pinsel waschen oder austauschen.",
-      "Name \u2013 Strategische Warenauffüllung (Restock): Die 10 meistverkauften Produkte (Best Seller) in den Regalen auffüllen. Die Schnellzugriffsschubladen unter den Verkaufstheken auffüllen. Prüfen, ob der Bereich \u201eNeuheiten\u201c vollständig und ordentlich ist. Beschädigte Produkte oder Produkte mit verschmutzter Verpackung aus dem Verkaufsbereich entfernen.",
-      "Name \u2013 Visual Merchandising (VM): Alle Produkte in den Regalen sauber ausrichten (Facing machen). Die Impulszone an der Kasse ordentlich auffüllen und organisieren. Sicherstellen, dass Preise und Etiketten sichtbar und korrekt sind.",
-      "Name \u2013 Sicherheit und operativer Ablauf: Die Innenbeleuchtung ausschalten, nur die notwendige Beleuchtung bzw. Schaufensterbeleuchtung eingeschaltet lassen. Prüfen, ob alle Lagerschubladen und Schränke abgeschlossen sind. Den Müll aus dem Geschäft und aus dem Pausenraum entsorgen. Die Alarmanlage aktivieren und die Haupteingangstür abschließen.",
-      "Name \u2013 Kommunikation (Handover): Eine Notiz für die Frühschichtleitung zu besonderen Vorkommnissen hinterlassen. Den finalen KPI des Tages festhalten, zum Beispiel: Wir haben das Ziel für den durchschnittlichen Bonwert erreicht!"
-    ]
+    "notes": ["Kundenfeedback: Die Kundin hat den Service von [Name] heute sehr gelobt"],
+    "focus": ["KPIs: KikoME > 35%; CR > 33%; UPT > 2.5%"],
+    "team": ["Name"],
+    "breaks": ["Name: 12:00 - 13:00"],
+    "todo": ["Name \u2013 Strategische Warenauffüllung: Die Lippenstiftschubladen während der Nachmittagsspitze immer gut gefüllt halten."],
+    "registers": ["Kasse A: Name"],
+    "evening": ["Name \u2013 Den Kassenabschluss durchführen. Die Geldtasche für die Bankeinzahlung vorbereiten. PowerBi und Stunde Produktivität"]
   }
 }

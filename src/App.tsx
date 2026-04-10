@@ -110,7 +110,7 @@ interface SectionProps {
   icon: LucideIcon;
   items: SectionItem[];
   setItems: Dispatch<SetStateAction<SectionItem[]>>;
-  placeholder: Partial<SectionItem>;
+  placeholderText: string;
   color: string;
   isTeam?: boolean;
   printColumns?: boolean;
@@ -190,12 +190,13 @@ export default function App() {
   const saved = loadSavedData();
 
   const [rawDate, setRawDate] = useState(() => saved?.rawDate ?? new Date().toISOString().split('T')[0]);
-  const [selectedStore, setSelectedStore] = useState(() => saved?.selectedStore ?? 'Kiko Taui');
-  const storeOptions = ["Kiko Taui", "Kiko Alexa", "Kiko Mall", "Kiko Rosenthal", "Kiko Boulevard"];
+  const [selectedStore, setSelectedStore] = useState(() => saved?.selectedStore ?? 'Berlin Taui');
+  const storeOptions = ["Berlin Taui", "Berlin Alexa", "Mall of Berlin", "Berlin Rosenthal", "Boulevard Berlin", "Dresden", "Leipzig"];
   const [showStoreDropdown, setShowStoreDropdown] = useState(false);
-  const [notes, setNotes] = useState<SectionItem[]>(() =>
-    saved?.notes ?? tArray('defaults.notes').map((text, i) => ({ id: i + 1, text }))
-  );
+  const [notes, setNotes] = useState<SectionItem[]>(() => {
+    if (saved?.notes) return saved.notes;
+    return [{ id: 1, text: '' }];
+  });
 
   const formattedDate = new Date(rawDate + 'T12:00:00').toLocaleDateString(locale, {
     weekday: 'long',
@@ -218,26 +219,32 @@ export default function App() {
     ly: '000.000'
   });
 
-  const [dailyFokus, setDailyFokus] = useState<SectionItem[]>(() =>
-    saved?.dailyFokus ?? tArray('defaults.focus').map((text, i) => ({ id: i + 1, text }))
-  );
+  const [dailyFokus, setDailyFokus] = useState<SectionItem[]>(() => {
+    if (saved?.dailyFokus) return saved.dailyFokus;
+    return [{ id: 1, text: '' }];
+  });
 
   // Section Item States
-  const [team, setTeam] = useState<SectionItem[]>(() =>
-    saved?.team ?? tArray('defaults.team').map((text, i) => ({ id: i + 1, text, iconIndex: randomIconIndex() }))
-  );
-  const [pausen, setPausen] = useState<SectionItem[]>(() =>
-    saved?.pausen ?? tArray('defaults.breaks').map((text, i) => ({ id: i + 1, text }))
-  );
-  const [todo, setTodo] = useState<SectionItem[]>(() =>
-    saved?.todo ?? tArray('defaults.todo').map((text, i) => ({ id: i + 1, text }))
-  );
-  const [kassen, setKassen] = useState<SectionItem[]>(() =>
-    saved?.kassen ?? tArray('defaults.registers').map((text, i) => ({ id: i + 1, text }))
-  );
-  const [abend, setAbend] = useState<SectionItem[]>(() =>
-    saved?.abend ?? tArray('defaults.evening').map((text, i) => ({ id: i + 1, text }))
-  );
+  const [team, setTeam] = useState<SectionItem[]>(() => {
+    if (saved?.team) return saved.team;
+    return [{ id: 1, text: '', iconIndex: randomIconIndex() }];
+  });
+  const [pausen, setPausen] = useState<SectionItem[]>(() => {
+    if (saved?.pausen) return saved.pausen;
+    return [{ id: 1, text: '' }];
+  });
+  const [todo, setTodo] = useState<SectionItem[]>(() => {
+    if (saved?.todo) return saved.todo;
+    return [{ id: 1, text: '' }];
+  });
+  const [kassen, setKassen] = useState<SectionItem[]>(() => {
+    if (saved?.kassen) return saved.kassen;
+    return [{ id: 1, text: '' }];
+  });
+  const [abend, setAbend] = useState<SectionItem[]>(() => {
+    if (saved?.abend) return saved.abend;
+    return [{ id: 1, text: '' }];
+  });
 
   // Persist all user data to localStorage
   useEffect(() => {
@@ -245,8 +252,8 @@ export default function App() {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [team, pausen, todo, kassen, abend, dailyFokus, notes, kpis, rawDate, selectedStore]);
 
-  const addItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>, placeholder: Partial<SectionItem>) => {
-    const newItem = { id: Date.now(), ...placeholder, iconIndex: randomIconIndex() } as SectionItem;
+  const addItem = (list: SectionItem[], setList: Dispatch<SetStateAction<SectionItem[]>>) => {
+    const newItem: SectionItem = { id: Date.now(), text: '', iconIndex: randomIconIndex() };
     setList([...list, newItem]);
   };
 
@@ -362,8 +369,8 @@ export default function App() {
     );
   };
 
-  const Section = ({ title, icon: Icon, items, setItems, placeholder, color, isTeam = false, printColumns = false, formatDash = false, readOnly = false }: SectionProps) => (
-    <motion.section 
+  const Section = ({ title, icon: Icon, items, setItems, placeholderText, color, isTeam = false, printColumns = false, formatDash = false, readOnly = false }: SectionProps) => (
+    <motion.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={`glass-card p-5 md:p-6 lg:p-8 rounded-3xl border-2 ${color} relative overflow-hidden group`}
@@ -375,7 +382,7 @@ export default function App() {
         </h2>
         {!readOnly && (
           <button
-            onClick={() => addItem(items, setItems, placeholder)}
+            onClick={() => addItem(items, setItems)}
             className={`p-2 rounded-full hover:scale-110 transition-all no-print ${color.replace('border-', 'bg-').replace('border-', 'text-white')}`}
           >
             <Plus size={18} />
@@ -410,6 +417,7 @@ export default function App() {
                 value={item.text}
                 onSave={(val: string) => updateItem(items, setItems, item.id, 'text', val)}
                 className="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-gray-700"
+                placeholder={placeholderText}
                 formatPrefix={!isTeam && !formatDash}
                 formatDash={formatDash}
                 readOnly={readOnly}
@@ -472,15 +480,19 @@ export default function App() {
                   }}
                   className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-50"
                 />
-                <ChevronDown size={14} className="opacity-0 group-hover/date:opacity-100 transition-opacity pointer-events-none" />
+                {!isShared && (
+                  <ChevronDown size={14} className="opacity-0 group-hover/date:opacity-100 transition-opacity pointer-events-none" />
+                )}
               </div>
               <div className={`relative group/store mb-2 ${showStoreDropdown ? 'z-110' : 'z-10'}`}>
                 <h1 
                   className="text-[clamp(1.8rem,6vw,4.5rem)] font-funny iridescent-text tracking-tight cursor-pointer flex items-center justify-center md:justify-start gap-3 hover:scale-[1.02] transition-transform"
                   onClick={() => !isShared && setShowStoreDropdown(!showStoreDropdown)}
                 >
-                  KIKO <span className="text-gray-800 uppercase">{selectedStore.split(' ')[1] || 'MILANO'}</span>
-                  <ChevronDown size={28} className="text-purple-400 group-hover/store:text-pink-500 transition-colors no-print drop-shadow-sm" />
+                  <span className="text-gray-800 uppercase">{selectedStore}</span>
+                  {!isShared && (
+                    <ChevronDown size={28} className="text-purple-400 group-hover/store:text-pink-500 transition-colors no-print drop-shadow-sm" />
+                  )}
                 </h1>
                 
                 {showStoreDropdown && (
@@ -589,12 +601,12 @@ export default function App() {
             </div>
 
             <div className="order-3">
-              <Section 
+              <Section
                 title={t('sections.team')}
                 icon={Users}
                 items={team}
                 setItems={setTeam}
-                placeholder={{ text: t('placeholders.name') }}
+                placeholderText={tArray('defaults.team')[0]}
                 color="border-yellow-200"
                 isTeam={true}
                 readOnly={isShared}
@@ -602,12 +614,12 @@ export default function App() {
             </div>
             
             <div className="order-4">
-              <Section 
+              <Section
                 title={t('sections.breaks')}
                 icon={Coffee}
                 items={pausen}
                 setItems={setPausen}
-                placeholder={{ text: t('placeholders.breakTime') }}
+                placeholderText={tArray('defaults.breaks')[0]}
                 color="border-pink-200"
                 printColumns
                 readOnly={isShared}
@@ -615,12 +627,12 @@ export default function App() {
             </div>
 
             <div className="order-6">
-              <Section 
+              <Section
                 title={t('sections.todo')}
                 icon={CheckSquare}
                 items={todo}
                 setItems={setTodo}
-                placeholder={{ text: t('placeholders.task') }}
+                placeholderText={tArray('defaults.todo')[0]}
                 color="border-blue-200"
                 formatDash
                 readOnly={isShared}
@@ -631,24 +643,24 @@ export default function App() {
           {/* Right Column: Daily Fokus, Kassen, Abend, Note */}
           <div className="contents md:flex md:flex-col md:gap-6 lg:gap-14">
             <div className="order-2">
-              <Section 
+              <Section
                 title={t('sections.dailyFocus')}
                 icon={Sparkles}
                 items={dailyFokus}
                 setItems={setDailyFokus}
-                placeholder={{ text: t('placeholders.focusToday') }}
+                placeholderText={tArray('defaults.focus')[0]}
                 color="border-pink-100"
                 readOnly={isShared}
               />
             </div>
 
             <div className="order-5">
-              <Section 
+              <Section
                 title={t('sections.registers')}
                 icon={ShoppingBag}
                 items={kassen}
                 setItems={setKassen}
-                placeholder={{ text: t('placeholders.registerName') }}
+                placeholderText={tArray('defaults.registers')[0]}
                 color="border-purple-200"
                 printColumns
                 readOnly={isShared}
@@ -656,12 +668,12 @@ export default function App() {
             </div>
 
             <div className="order-7">
-              <Section 
+              <Section
                 title={t('sections.evening')}
                 icon={Moon}
                 items={abend}
                 setItems={setAbend}
-                placeholder={{ text: t('placeholders.task') }}
+                placeholderText={tArray('defaults.evening')[0]}
                 color="border-indigo-200"
                 formatDash
                 readOnly={isShared}
@@ -669,12 +681,12 @@ export default function App() {
             </div>
 
             <div className="order-8">
-              <Section 
+              <Section
                 title={t('sections.notes')}
                 icon={FileText}
                 items={notes}
                 setItems={setNotes}
-                placeholder={{ text: t('placeholders.noteInfo') }}
+                placeholderText={tArray('defaults.notes')[0]}
                 color="border-gray-200"
               />
             </div>

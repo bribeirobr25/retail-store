@@ -42,45 +42,12 @@
     "whatsappText": "Daily Plan: "
   },
   "defaults": {
-    "notes": [
-      "Customer feedback: The customer praised [Name]'s service today",
-      "Customer feedback: Several customers are asking about the restocking of lipstick [Color/Model].",
-      "Operational reminders: Replace the lamp in the stockroom.",
-      "Operational reminders: Order more medium-sized bags with the next delivery.",
-      "Product highlights: Product of the day: [Product name] explain the benefits of moisturizing.",
-      "Goals and motivation: Only \u20ac200 left to reach our additional weekly target!",
-      "Shift communication: Attention: The drawer at Register 1 is slightly stuck.",
-      "Quick training: Technical tip: The new mascara should be applied in zigzag strokes for more volume."
-    ],
-    "focus": [
-      "KPIs: KikoME > 35%; CR > 33%; UPT > 2.5%",
-      "Increase average receipt value: Offer a lip liner with every lipstick sold.",
-      "Cross-selling: After every foundation or powder sale, recommend a makeup setting spray.",
-      "Focus on new arrivals: Introduce the new collection [Collection Name] to all customers.",
-      "Star product: Today's focus is on the mascara [Name] \u2013 Target: 15 units.",
-      "Skincare: Demonstrate the moisturizing serum on the back of every customer's hand.",
-      "Active demonstrations: Perform at least 5 flash makeovers today.",
-      "Customer loyalty: Ensure 100% of customers are informed about the Kiko Rewards loyalty program.",
-      "Premium service: Full focus on personalized consultation for choosing the right foundation shade."
-    ],
-    "team": ["Name", "Name", "Name"],
-    "breaks": ["Name: 12:00 - 13:00", "Name: 12:30 - 13:30", "Name: 13:00 - 14:00"],
-    "todo": [
-      "Name \u2013 Strategic restocking: Keep the lipstick drawers well-stocked during the afternoon rush.",
-      "Name \u2013 Tester check: Ensure all testers are clean and have sufficient product.",
-      "Name \u2013 Opening routine: Turn on the store lights and sound system. Check the opening cash float (Register 1 and 2). Clean mirrors and makeup tables. Sanitize all test brushes and applicators.",
-      "Name \u2013 Maintenance and inventory: Restock the lipsticks from the [Line Name] range that sold out yesterday.",
-      "Name \u2013 Visual Merchandising (VM): Update prices in the 'Last Chance' area. Clean the main window display (remove fingerprints). Reposition new collection products according to the VM guide. Replace the entrance promotional banner.",
-      "Name \u2013 Administration and team: Check regional management emails. Conduct the quick 5-minute training on [New Product]."
-    ],
-    "registers": ["Register A: Name", "Register B: Name", "Mobile 1: Name"],
-    "evening": [
-      "Name \u2013 Perform the cash register closing. Prepare the cash bag for bank deposit. PowerBi and hourly productivity",
-      "Name \u2013 Tester care and hygiene: Clean and disinfect all lipstick and eyeshadow testers. Sharpen used eye and lip pencils. Clean the makeup tables and mirrors in the store. Wash or replace demonstration sponges and brushes.",
-      "Name \u2013 Strategic restocking (Restock): Restock the top 10 best-selling products on shelves. Restock the quick-access drawers under the sales counters. Check that the 'New Arrivals' area is complete and tidy. Remove damaged products or products with soiled packaging from the sales floor.",
-      "Name \u2013 Visual Merchandising (VM): Neatly align all products on shelves (facing). Restock and organize the impulse zone at the register. Ensure prices and labels are visible and correct.",
-      "Name \u2013 Security and operations: Turn off interior lighting, leaving only necessary lighting and window display lights on. Check that all storage drawers and cabinets are locked. Dispose of trash from the store and break room. Activate the alarm system and lock the main entrance door.",
-      "Name \u2013 Communication (Handover): Leave a note for the morning shift leader about any special incidents. Record the final KPI of the day, for example: We achieved the average receipt value target!"
-    ]
+    "notes": ["Customer feedback: The customer praised [Name]'s service today"],
+    "focus": ["KPIs: KikoME > 35%; CR > 33%; UPT > 2.5%"],
+    "team": ["Name"],
+    "breaks": ["Name: 12:00 - 13:00"],
+    "todo": ["Name \u2013 Strategic restocking: Keep the lipstick drawers well-stocked during the afternoon rush."],
+    "registers": ["Register A: Name"],
+    "evening": ["Name \u2013 Perform the cash register closing. Prepare the cash bag for bank deposit. PowerBi and hourly productivity"]
   }
 }
