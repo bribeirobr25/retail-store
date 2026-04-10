@@ -87,7 +87,8 @@ describe('App', () => {
 
       expect(teamButtons()).toHaveLength(2); // 1 add + 1 trash
 
-      fireEvent.click(teamButtons()[0]);
+      // Length asserted above, so [0] is guaranteed defined
+      fireEvent.click(teamButtons()[0]!);
 
       await waitFor(() => {
         expect(teamButtons()).toHaveLength(3); // 1 add + 2 trash

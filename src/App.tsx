@@ -55,7 +55,7 @@ import svgCupcakebear from '../images/svg/cupcakebear.svg';
 import svgRabbit from '../images/svg/rabbit.svg';
 import svgPrinces from '../images/svg/princes.svg';
 
-import type { SectionItem, TeamIcon } from './types';
+import type { SectionItem, TeamIcon, KpiData } from './types';
 import { STORAGE_KEY, loadSavedData, type SavedData } from './lib/storage';
 import { buildShareUrl } from './lib/share';
 
@@ -93,6 +93,12 @@ const TEAM_ICONS: TeamIcon[] = [
 ];
 
 const randomIconIndex = () => Math.floor(Math.random() * TEAM_ICONS.length);
+
+// TEAM_ICONS is a const array with 28 entries, so this lookup is always defined.
+// The non-null assertion is safe and avoids polluting every call site with `?? TEAM_ICONS[0]`.
+function getTeamIcon(idx: number): TeamIcon {
+  return TEAM_ICONS[idx % TEAM_ICONS.length]!;
+}
 
 interface EditableInputProps {
   value: string;
@@ -157,9 +163,17 @@ export default function App() {
     setShowShareMenu(false);
   };
 
+  // After trimming the JSON defaults to a single entry per section,
+  // tArray(key)[0] is always defined — but TS can't see that. Helper guards it.
+  const placeholder = (key: string) => tArray(key)[0] ?? '';
+
   const saved = loadSavedData();
 
-  const [rawDate, setRawDate] = useState(() => saved?.rawDate ?? new Date().toISOString().split('T')[0]);
+  const [rawDate, setRawDate] = useState<string>(() => {
+    if (saved?.rawDate) return saved.rawDate;
+    // toISOString always contains a 'T' so split[0] is guaranteed; ?? '' satisfies the type checker
+    return new Date().toISOString().split('T')[0] ?? '';
+  });
   const [selectedStore, setSelectedStore] = useState(() => saved?.selectedStore ?? 'Berlin Taui');
   const storeOptions = ["Berlin Taui", "Berlin Alexa", "Mall of Berlin", "Berlin Rosenthal", "Boulevard Berlin", "Dresden", "Leipzig"];
   const [showStoreDropdown, setShowStoreDropdown] = useState(false);
@@ -180,7 +194,7 @@ export default function App() {
   });
 
   // KPI States
-  const [kpis, setKpis] = useState(() => saved?.kpis ?? {
+  const [kpis, setKpis] = useState<KpiData>(() => saved?.kpis ?? {
     vj: '00.000',
     target: '00.000',
     targetWeek: '00.000',
@@ -371,7 +385,7 @@ export default function App() {
             >
               {isTeam && (() => {
                 const idx = typeof item.iconIndex === 'number' ? item.iconIndex : 0;
-                const teamIcon = TEAM_ICONS[idx % TEAM_ICONS.length];
+                const teamIcon = getTeamIcon(idx);
                 return (
                   <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 overflow-hidden">
                     {teamIcon.type === 'svg' ? (
@@ -576,7 +590,7 @@ export default function App() {
                 icon={Users}
                 items={team}
                 setItems={setTeam}
-                placeholderText={tArray('defaults.team')[0]}
+                placeholderText={placeholder('defaults.team')}
                 color="border-yellow-200"
                 isTeam={true}
                 readOnly={isShared}
@@ -589,7 +603,7 @@ export default function App() {
                 icon={Coffee}
                 items={pausen}
                 setItems={setPausen}
-                placeholderText={tArray('defaults.breaks')[0]}
+                placeholderText={placeholder('defaults.breaks')}
                 color="border-pink-200"
                 printColumns
                 readOnly={isShared}
@@ -602,7 +616,7 @@ export default function App() {
                 icon={CheckSquare}
                 items={todo}
                 setItems={setTodo}
-                placeholderText={tArray('defaults.todo')[0]}
+                placeholderText={placeholder('defaults.todo')}
                 color="border-blue-200"
                 formatDash
                 readOnly={isShared}
@@ -618,7 +632,7 @@ export default function App() {
                 icon={Sparkles}
                 items={dailyFokus}
                 setItems={setDailyFokus}
-                placeholderText={tArray('defaults.focus')[0]}
+                placeholderText={placeholder('defaults.focus')}
                 color="border-pink-100"
                 readOnly={isShared}
               />
@@ -630,7 +644,7 @@ export default function App() {
                 icon={ShoppingBag}
                 items={kassen}
                 setItems={setKassen}
-                placeholderText={tArray('defaults.registers')[0]}
+                placeholderText={placeholder('defaults.registers')}
                 color="border-purple-200"
                 printColumns
                 readOnly={isShared}
@@ -643,7 +657,7 @@ export default function App() {
                 icon={Moon}
                 items={abend}
                 setItems={setAbend}
-                placeholderText={tArray('defaults.evening')[0]}
+                placeholderText={placeholder('defaults.evening')}
                 color="border-indigo-200"
                 formatDash
                 readOnly={isShared}
@@ -656,7 +670,7 @@ export default function App() {
                 icon={FileText}
                 items={notes}
                 setItems={setNotes}
-                placeholderText={tArray('defaults.notes')[0]}
+                placeholderText={placeholder('defaults.notes')}
                 color="border-gray-200"
               />
             </div>

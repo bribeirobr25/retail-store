@@ -1,4 +1,4 @@
-import type { SectionItem } from '../types';
+import type { SectionItem, KpiData } from '../types';
 
 export const STORAGE_KEY = 'retail-store-data';
 
@@ -10,7 +10,7 @@ export interface SavedData {
   abend: SectionItem[];
   dailyFokus: SectionItem[];
   notes: SectionItem[];
-  kpis: Record<string, string>;
+  kpis: KpiData;
   rawDate: string;
   selectedStore: string;
 }
