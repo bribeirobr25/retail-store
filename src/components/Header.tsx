@@ -1,36 +1,25 @@
 import { Calendar, ChevronDown, Heart, Star, Sparkles, History } from 'lucide-react';
 import { useTranslation } from '../i18n';
-import type { KpiData } from '../types';
+import { usePlanStore, STORE_OPTIONS } from '../store/planStore';
 import { StoreSelector } from './StoreSelector';
 import { LanguageToggle } from './LanguageToggle';
 import { KpiCard } from './KpiCard';
 
 export interface HeaderProps {
-  rawDate: string;
-  onDateChange: (date: string) => void;
   formattedDate: string;
   currentMonth: string;
-  selectedStore: string;
-  storeOptions: readonly string[];
-  onStoreSelect: (store: string) => void;
-  kpis: KpiData;
-  onKpiChange: (key: keyof KpiData, val: string) => void;
   isShared: boolean;
 }
 
-export function Header({
-  rawDate,
-  onDateChange,
-  formattedDate,
-  currentMonth,
-  selectedStore,
-  storeOptions,
-  onStoreSelect,
-  kpis,
-  onKpiChange,
-  isShared,
-}: HeaderProps) {
+export function Header({ formattedDate, currentMonth, isShared }: HeaderProps) {
   const { t } = useTranslation();
+
+  const rawDate = usePlanStore((s) => s.rawDate);
+  const setRawDate = usePlanStore((s) => s.setRawDate);
+  const selectedStore = usePlanStore((s) => s.selectedStore);
+  const setSelectedStore = usePlanStore((s) => s.setSelectedStore);
+  const kpis = usePlanStore((s) => s.kpis);
+  const setKpi = usePlanStore((s) => s.setKpi);
 
   return (
     <header className="relative p-8 bg-linear-to-r from-[#e2d1f9] via-[#fdfcfb] to-[#e2d1f9] z-30">
@@ -56,7 +45,7 @@ export function Header({
             <input
               type="date"
               value={rawDate}
-              onChange={(e) => !isShared && onDateChange(e.target.value)}
+              onChange={(e) => !isShared && setRawDate(e.target.value)}
               disabled={isShared}
               onClick={(e) => {
                 try {
@@ -76,8 +65,8 @@ export function Header({
           </div>
           <StoreSelector
             selectedStore={selectedStore}
-            storeOptions={storeOptions}
-            onSelect={onStoreSelect}
+            storeOptions={STORE_OPTIONS}
+            onSelect={setSelectedStore}
             readOnly={isShared}
           />
         </div>
@@ -93,7 +82,7 @@ export function Header({
               iconColor="text-blue-500"
               valueColor="text-blue-600"
               value={kpis.ly}
-              onSave={(val) => onKpiChange('ly', val)}
+              onSave={(val) => setKpi('ly', val)}
               label={t('kpi.ly')}
               readOnly={isShared}
             />
@@ -102,7 +91,7 @@ export function Header({
               iconColor="text-yellow-500"
               valueColor="text-yellow-600"
               value={kpis.t1}
-              onSave={(val) => onKpiChange('t1', val)}
+              onSave={(val) => setKpi('t1', val)}
               label={t('kpi.t1')}
               readOnly={isShared}
             />
@@ -111,7 +100,7 @@ export function Header({
               iconColor="text-orange-500"
               valueColor="text-orange-600"
               value={kpis.t2}
-              onSave={(val) => onKpiChange('t2', val)}
+              onSave={(val) => setKpi('t2', val)}
               label={t('kpi.t2')}
               readOnly={isShared}
             />

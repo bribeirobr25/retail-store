@@ -17,7 +17,7 @@ import { Section } from './components/Section';
 import { Header } from './components/Header';
 import { KpiCard } from './components/KpiCard';
 import { FloatingActions } from './components/FloatingActions';
-import { usePlanStore, STORE_OPTIONS } from './store/planStore';
+import { usePlanStore } from './store/planStore';
 
 export default function App() {
   const { t, tArray, locale } = useTranslation();
@@ -27,11 +27,9 @@ export default function App() {
   // tArray(key)[0] is always defined — but TS can't see that. Helper guards it.
   const placeholder = (key: string) => tArray(key)[0] ?? '';
 
-  // Plan state from the Zustand store
+  // Plan state from the Zustand store. rawDate is also read here so the
+  // formattedDate calculation can use it; the Header reads it directly too.
   const rawDate = usePlanStore((s) => s.rawDate);
-  const setRawDate = usePlanStore((s) => s.setRawDate);
-  const selectedStore = usePlanStore((s) => s.selectedStore);
-  const setSelectedStore = usePlanStore((s) => s.setSelectedStore);
   const kpis = usePlanStore((s) => s.kpis);
   const setKpi = usePlanStore((s) => s.setKpi);
   const team = usePlanStore((s) => s.team);
@@ -68,15 +66,8 @@ export default function App() {
         className="max-w-7xl mx-auto glass-card rounded-[3rem] overflow-hidden border-4 border-white/50 flex flex-col min-h-275 print-container bubbly-shadow"
       >
         <Header
-          rawDate={rawDate}
-          onDateChange={setRawDate}
           formattedDate={formattedDate}
           currentMonth={currentMonth}
-          selectedStore={selectedStore}
-          storeOptions={STORE_OPTIONS}
-          onStoreSelect={setSelectedStore}
-          kpis={kpis}
-          onKpiChange={setKpi}
           isShared={isShared}
         />
 
