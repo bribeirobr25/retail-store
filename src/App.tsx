@@ -26,8 +26,8 @@ import type { SectionItem, KpiData } from './types';
 import { STORAGE_KEY, loadSavedData, type SavedData } from './lib/storage';
 import { buildShareUrl } from './lib/share';
 import { randomIconIndex } from './lib/teamIcons';
-import { EditableInput } from './components/EditableInput';
 import { Section } from './components/Section';
+import { KpiCard } from './components/KpiCard';
 
 export default function App() {
   const { t, tArray, lang, setLang, locale } = useTranslation();
@@ -240,36 +240,33 @@ export default function App() {
                 {t('header.month')}: {currentMonth}
               </div>
               <div className="flex gap-3">
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[90px] lg:min-w-[110px]">
-                  <History className="text-blue-500 mb-1" size={18} />
-                  <EditableInput
-                    value={kpis.ly}
-                    onSave={(val: string) => setKpis({ ...kpis, ly: val })}
-                    className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-blue-600"
-                    readOnly={isShared}
-                  />
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('kpi.ly')}</span>
-                </div>
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[90px] lg:min-w-[110px]">
-                  <Star className="text-yellow-500 mb-1" size={18} />
-                  <EditableInput
-                    value={kpis.t1}
-                    onSave={(val: string) => setKpis({ ...kpis, t1: val })}
-                    className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-yellow-600"
-                    readOnly={isShared}
-                  />
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('kpi.t1')}</span>
-                </div>
-                <div className="glass-card p-3 rounded-2xl border-purple-200 flex flex-col items-center min-w-20 md:min-w-[90px] lg:min-w-[110px]">
-                  <Sparkles className="text-orange-500 mb-1" size={18} />
-                  <EditableInput
-                    value={kpis.t2}
-                    onSave={(val: string) => setKpis({ ...kpis, t2: val })}
-                    className="w-full text-center bg-transparent border-none p-0 text-base font-funny focus:ring-0 text-orange-600"
-                    readOnly={isShared}
-                  />
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('kpi.t2')}</span>
-                </div>
+                <KpiCard
+                  icon={History}
+                  iconColor="text-blue-500"
+                  valueColor="text-blue-600"
+                  value={kpis.ly}
+                  onSave={(val) => setKpis({ ...kpis, ly: val })}
+                  label={t('kpi.ly')}
+                  readOnly={isShared}
+                />
+                <KpiCard
+                  icon={Star}
+                  iconColor="text-yellow-500"
+                  valueColor="text-yellow-600"
+                  value={kpis.t1}
+                  onSave={(val) => setKpis({ ...kpis, t1: val })}
+                  label={t('kpi.t1')}
+                  readOnly={isShared}
+                />
+                <KpiCard
+                  icon={Sparkles}
+                  iconColor="text-orange-500"
+                  valueColor="text-orange-600"
+                  value={kpis.t2}
+                  onSave={(val) => setKpis({ ...kpis, t2: val })}
+                  label={t('kpi.t2')}
+                  readOnly={isShared}
+                />
               </div>
             </div>
           </div>
@@ -281,26 +278,36 @@ export default function App() {
           <div className="contents md:flex md:flex-col md:gap-6 lg:gap-14">
             <div className="order-1">
               <div className="grid grid-cols-3 gap-3 md:gap-4 lg:gap-6">
-                {[
-                  { label: t('kpi.todaysTarget'), value: kpis.target, key: 'target', icon: Target, color: 'text-blue-500' },
-                  { label: t('kpi.lastYear'), value: kpis.vj, key: 'vj', icon: History, color: 'text-pink-500' },
-                  { label: t('kpi.weeksTarget'), value: kpis.targetWeek, key: 'targetWeek', icon: Layout, color: 'text-purple-500' },
-                ].map((kpi) => (
-                  <motion.div 
-                    whileHover={{ scale: 1.05 }}
-                    key={kpi.label} 
-                    className="glass-card p-3 rounded-2xl border-2 border-white flex flex-col items-center text-center"
-                  >
-                    <kpi.icon size={18} className={`${kpi.color} mb-1`} />
-                    <EditableInput
-                      value={kpi.value}
-                      onSave={(val: string) => setKpis({ ...kpis, [kpi.key]: val })}
-                      className={`w-full text-center bg-transparent border-none p-0 text-lg font-funny focus:ring-0 ${kpi.color}`}
-                      readOnly={isShared}
-                    />
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-tight">{kpi.label}</span>
-                  </motion.div>
-                ))}
+                <KpiCard
+                  variant="body"
+                  icon={Target}
+                  iconColor="text-blue-500"
+                  valueColor="text-blue-500"
+                  value={kpis.target}
+                  onSave={(val) => setKpis({ ...kpis, target: val })}
+                  label={t('kpi.todaysTarget')}
+                  readOnly={isShared}
+                />
+                <KpiCard
+                  variant="body"
+                  icon={History}
+                  iconColor="text-pink-500"
+                  valueColor="text-pink-500"
+                  value={kpis.vj}
+                  onSave={(val) => setKpis({ ...kpis, vj: val })}
+                  label={t('kpi.lastYear')}
+                  readOnly={isShared}
+                />
+                <KpiCard
+                  variant="body"
+                  icon={Layout}
+                  iconColor="text-purple-500"
+                  valueColor="text-purple-500"
+                  value={kpis.targetWeek}
+                  onSave={(val) => setKpis({ ...kpis, targetWeek: val })}
+                  label={t('kpi.weeksTarget')}
+                  readOnly={isShared}
+                />
               </div>
             </div>
 
