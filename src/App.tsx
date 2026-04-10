@@ -55,10 +55,9 @@ import svgCupcakebear from '../images/svg/cupcakebear.svg';
 import svgRabbit from '../images/svg/rabbit.svg';
 import svgPrinces from '../images/svg/princes.svg';
 
-interface TextItem { id: number; text: string; iconIndex?: number }
-type SectionItem = TextItem;
-
-type TeamIcon = { type: 'lucide'; icon: LucideIcon } | { type: 'svg'; src: string };
+import type { SectionItem, TeamIcon } from './types';
+import { STORAGE_KEY, loadSavedData, type SavedData } from './lib/storage';
+import { buildShareUrl } from './lib/share';
 
 const TEAM_ICONS: TeamIcon[] = [
   // Custom SVGs
@@ -118,30 +117,6 @@ interface SectionProps {
   readOnly?: boolean;
 }
 
-const STORAGE_KEY = 'retail-store-data';
-
-interface SavedData {
-  team: SectionItem[];
-  pausen: SectionItem[];
-  todo: SectionItem[];
-  kassen: SectionItem[];
-  abend: SectionItem[];
-  dailyFokus: SectionItem[];
-  notes: SectionItem[];
-  kpis: Record<string, string>;
-  rawDate: string;
-  selectedStore: string;
-}
-
-function loadSavedData(): SavedData | null {
-  try {
-    const saved = sessionStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : null;
-  } catch {
-    return null;
-  }
-}
-
 export default function App() {
   const { t, tArray, lang, setLang, locale } = useTranslation();
   const isShared = new URLSearchParams(window.location.search).get('mode') === 'shared';
@@ -160,12 +135,7 @@ export default function App() {
   }, [showShareMenu]);
   const [showShareToast, setShowShareToast] = useState(false);
 
-  const getShareUrl = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('mode', 'shared');
-    url.searchParams.set('lang', lang);
-    return url.toString();
-  };
+  const getShareUrl = () => buildShareUrl(window.location.href, lang);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(getShareUrl());
