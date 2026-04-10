@@ -11,7 +11,7 @@ const locales: Record<Language, string> = {
   de: 'de-DE',
 };
 
-function getNestedValue(obj: Record<string, unknown>, path: string): string {
+export function getNestedValue(obj: Record<string, unknown>, path: string): string {
   const keys = path.split('.');
   let current: unknown = obj;
   for (const key of keys) {
@@ -24,7 +24,7 @@ function getNestedValue(obj: Record<string, unknown>, path: string): string {
   return typeof current === 'string' ? current : path;
 }
 
-function getNestedArray(obj: Record<string, unknown>, path: string): string[] {
+export function getNestedArray(obj: Record<string, unknown>, path: string): string[] {
   const keys = path.split('.');
   let current: unknown = obj;
   for (const key of keys) {
@@ -47,7 +47,7 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | null>(null);
 
-function getInitialLang(): Language {
+export function getInitialLang(): Language {
   const urlLang = new URLSearchParams(window.location.search).get('lang');
   if (urlLang === 'en' || urlLang === 'de') return urlLang;
   const stored = localStorage.getItem('lang');
