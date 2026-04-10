@@ -28,9 +28,10 @@ import { buildShareUrl } from './lib/share';
 import { randomIconIndex } from './lib/teamIcons';
 import { Section } from './components/Section';
 import { KpiCard } from './components/KpiCard';
+import { LanguageToggle } from './components/LanguageToggle';
 
 export default function App() {
-  const { t, tArray, lang, setLang, locale } = useTranslation();
+  const { t, tArray, lang, locale } = useTranslation();
   const isShared = new URLSearchParams(window.location.search).get('mode') === 'shared';
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareMenuRef = useRef<HTMLDivElement>(null);
@@ -220,22 +221,7 @@ export default function App() {
             </div>
 
             <div className="flex flex-col items-center gap-2 md:flex-1 relative">
-              {!isShared && (
-                <div className="flex rounded-full border border-purple-200 overflow-hidden no-print md:absolute md:top-0 md:right-0">
-                  <button
-                    onClick={() => setLang('de')}
-                    className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${lang === 'de' ? 'bg-purple-500 text-white' : 'bg-white/50 text-purple-400 hover:bg-purple-50'}`}
-                  >
-                    DE
-                  </button>
-                  <button
-                    onClick={() => setLang('en')}
-                    className={`px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${lang === 'en' ? 'bg-purple-500 text-white' : 'bg-white/50 text-purple-400 hover:bg-purple-50'}`}
-                  >
-                    EN
-                  </button>
-                </div>
-              )}
+              {!isShared && <LanguageToggle />}
               <div className="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] bg-white/50 px-3 py-1 rounded-full border border-purple-100">
                 {t('header.month')}: {currentMonth}
               </div>
