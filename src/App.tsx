@@ -1,11 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from './i18n';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
-  Share2,
-  Link,
-  MessageCircle,
-  Mail,
   Users,
   Target,
   CheckSquare,
@@ -20,51 +16,15 @@ import {
 
 import type { SectionItem, KpiData } from './types';
 import { STORAGE_KEY, loadSavedData, type SavedData } from './lib/storage';
-import { buildShareUrl } from './lib/share';
 import { randomIconIndex } from './lib/teamIcons';
 import { Section } from './components/Section';
-import { KpiCard } from './components/KpiCard';
 import { Header } from './components/Header';
+import { KpiCard } from './components/KpiCard';
+import { FloatingActions } from './components/FloatingActions';
 
 export default function App() {
-  const { t, tArray, lang, locale } = useTranslation();
+  const { t, tArray, locale } = useTranslation();
   const isShared = new URLSearchParams(window.location.search).get('mode') === 'shared';
-  const [showShareMenu, setShowShareMenu] = useState(false);
-  const shareMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!showShareMenu) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (shareMenuRef.current && !shareMenuRef.current.contains(e.target as Node)) {
-        setShowShareMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showShareMenu]);
-  const [showShareToast, setShowShareToast] = useState(false);
-
-  const getShareUrl = () => buildShareUrl(window.location.href, lang);
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(getShareUrl());
-    setShowShareMenu(false);
-    setShowShareToast(true);
-    setTimeout(() => setShowShareToast(false), 2000);
-  };
-
-  const handleShareWhatsApp = () => {
-    const text = encodeURIComponent(`${t('share.whatsappText')}${getShareUrl()}`);
-    window.open(`https://wa.me/?text=${text}`, '_blank');
-    setShowShareMenu(false);
-  };
-
-  const handleShareEmail = () => {
-    const subject = encodeURIComponent(t('share.emailSubject'));
-    const body = encodeURIComponent(`${t('share.emailBody')}${getShareUrl()}`);
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    setShowShareMenu(false);
-  };
 
   // After trimming the JSON defaults to a single entry per section,
   // tArray(key)[0] is always defined — but TS can't see that. Helper guards it.
@@ -291,75 +251,7 @@ export default function App() {
         </main>
       </motion.div>
 
-      {/* Floating Action Buttons */}
-      <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 flex flex-col items-end gap-3 no-print z-50">
-        <div className="relative" ref={shareMenuRef}>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowShareMenu(!showShareMenu)}
-            className="bg-white text-purple-600 border-2 border-purple-200 px-5 py-3 md:px-8 md:py-4 rounded-full shadow-xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
-          >
-            <Share2 size={20} />
-            <span className="hidden md:inline">{t('ui.share')}</span>
-          </motion.button>
-
-          <AnimatePresence>
-            {showShareMenu && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className="absolute bottom-full right-0 mb-2 bg-white rounded-2xl shadow-2xl border-2 border-purple-100 overflow-hidden w-56"
-              >
-                <button
-                  onClick={handleCopyLink}
-                  className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-purple-50 flex items-center gap-3 transition-colors"
-                >
-                  <Link size={18} className="text-purple-500" /> {t('ui.copyLink')}
-                </button>
-                <button
-                  onClick={handleShareWhatsApp}
-                  className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-green-50 flex items-center gap-3 transition-colors border-t border-gray-100"
-                >
-                  <MessageCircle size={18} className="text-green-500" /> {t('ui.whatsapp')}
-                </button>
-                <button
-                  onClick={handleShareEmail}
-                  className="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-blue-50 flex items-center gap-3 transition-colors border-t border-gray-100"
-                >
-                  <Mail size={18} className="text-blue-500" /> {t('ui.email')}
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => window.print()}
-          className="bg-linear-to-r from-pink-500 to-purple-600 text-white px-5 py-3 md:px-8 md:py-4 rounded-full shadow-2xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
-        >
-          <FileText size={20} />
-          <span className="hidden md:inline">{t('ui.generatePdf')}</span>
-          <span className="md:hidden">{t('ui.generatePdfShort')}</span>
-        </motion.button>
-      </div>
-
-      {/* Share toast */}
-      <AnimatePresence>
-        {showShareToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 right-6 md:bottom-28 md:right-8 bg-green-500 text-white px-6 py-3 rounded-full shadow-xl font-medium text-sm z-50 no-print"
-          >
-            {t('ui.linkCopied')}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <FloatingActions />
     </div>
   );
 }
