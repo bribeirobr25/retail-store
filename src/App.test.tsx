@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { renderWithI18n, screen, userEvent, within, fireEvent, waitFor } from './test/helpers';
+import { renderWithI18n, screen, userEvent, within, fireEvent } from './test/helpers';
 import App from './App';
 
 function setUrl(url: string) {
@@ -75,24 +75,22 @@ describe('App', () => {
   });
 
   describe('section content editing', () => {
-    it('allows clicking the team add button to insert a second item', async () => {
+    it('allows clicking the team add button to insert a second item', () => {
       renderWithI18n(<App />);
 
-      // Helper that always queries the current team section (refs become
-      // stale across re-renders because Section is defined inside App)
-      const teamButtons = () => {
-        const section = screen.getByRole('heading', { name: 'Team' }).closest('section') as HTMLElement;
-        return within(section).getAllByRole('button');
-      };
+      const teamSection = screen.getByRole('heading', { name: 'Team' }).closest('section') as HTMLElement;
+      const teamScope = within(teamSection);
 
-      expect(teamButtons()).toHaveLength(2); // 1 add + 1 trash
+      // Initially: 1 add + 1 trash = 2 buttons
+      const initialButtons = teamScope.getAllByRole('button');
+      expect(initialButtons).toHaveLength(2);
 
-      // Length asserted above, so [0] is guaranteed defined
-      fireEvent.click(teamButtons()[0]!);
+      // Click the + button (first button in the section header)
+      fireEvent.click(initialButtons[0]!);
 
-      await waitFor(() => {
-        expect(teamButtons()).toHaveLength(3); // 1 add + 2 trash
-      });
+      // After click: 1 add + 2 trash = 3 buttons. Section now lives at module
+      // scope, so the section ref is stable across the re-render.
+      expect(teamScope.getAllByRole('button')).toHaveLength(3);
     });
 
     it('persists user edits to sessionStorage', async () => {
