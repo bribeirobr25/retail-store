@@ -1,15 +1,21 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderWithI18n, screen, userEvent, within, fireEvent } from './test/helpers';
 import App from './App';
+import { usePlanStore } from './store/planStore';
 
 function setUrl(url: string) {
   window.history.replaceState({}, '', url);
 }
 
+const initialPlanState = usePlanStore.getState();
+
 describe('App', () => {
   beforeEach(() => {
     sessionStorage.clear();
     localStorage.clear();
+    // Reset the Zustand store between tests so state from one test doesn't
+    // leak into the next. The store is a module-level singleton.
+    usePlanStore.setState(initialPlanState, true);
     setUrl('/');
   });
 
@@ -109,11 +115,12 @@ describe('App', () => {
       // Blur to save
       await user.tab();
 
-      // Verify saved to sessionStorage
-      const stored = sessionStorage.getItem('retail-store-data');
+      // Verify saved to sessionStorage. Zustand persist middleware wraps
+      // the state under { state: ..., version: ... }
+      const stored = sessionStorage.getItem('retail-store');
       expect(stored).not.toBeNull();
       const parsed = JSON.parse(stored as string);
-      expect(parsed.team[0].text).toBe('Anna');
+      expect(parsed.state.team[0].text).toBe('Anna');
     });
   });
 
