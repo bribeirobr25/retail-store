@@ -27,7 +27,7 @@ const DEFAULT_KPIS: KpiData = {
 
 const emptyItems = (): SectionItem[] => [{ id: 1, text: '' }];
 
-type SectionKey = 'team' | 'pausen' | 'todo' | 'kassen' | 'abend' | 'dailyFokus' | 'notes';
+type SectionKey = 'team' | 'breaks' | 'todo' | 'registers' | 'eveningShift' | 'dailyFocus' | 'notes';
 
 export interface PlanState {
   // Data
@@ -35,11 +35,11 @@ export interface PlanState {
   selectedStore: string;
   kpis: KpiData;
   team: SectionItem[];
-  pausen: SectionItem[];
+  breaks: SectionItem[];
   todo: SectionItem[];
-  kassen: SectionItem[];
-  abend: SectionItem[];
-  dailyFokus: SectionItem[];
+  registers: SectionItem[];
+  eveningShift: SectionItem[];
+  dailyFocus: SectionItem[];
   notes: SectionItem[];
 
   // Actions
@@ -47,11 +47,11 @@ export interface PlanState {
   setSelectedStore: (store: string) => void;
   setKpi: (key: keyof KpiData, value: string) => void;
   setTeam: Dispatch<SetStateAction<SectionItem[]>>;
-  setPausen: Dispatch<SetStateAction<SectionItem[]>>;
+  setBreaks: Dispatch<SetStateAction<SectionItem[]>>;
   setTodo: Dispatch<SetStateAction<SectionItem[]>>;
-  setKassen: Dispatch<SetStateAction<SectionItem[]>>;
-  setAbend: Dispatch<SetStateAction<SectionItem[]>>;
-  setDailyFokus: Dispatch<SetStateAction<SectionItem[]>>;
+  setRegisters: Dispatch<SetStateAction<SectionItem[]>>;
+  setEveningShift: Dispatch<SetStateAction<SectionItem[]>>;
+  setDailyFocus: Dispatch<SetStateAction<SectionItem[]>>;
   setNotes: Dispatch<SetStateAction<SectionItem[]>>;
 }
 
@@ -76,11 +76,11 @@ export const usePlanStore = create<PlanState>()(
       selectedStore: 'Berlin Taui',
       kpis: DEFAULT_KPIS,
       team: emptyItems(),
-      pausen: emptyItems(),
+      breaks: emptyItems(),
       todo: emptyItems(),
-      kassen: emptyItems(),
-      abend: emptyItems(),
-      dailyFokus: emptyItems(),
+      registers: emptyItems(),
+      eveningShift: emptyItems(),
+      dailyFocus: emptyItems(),
       notes: emptyItems(),
 
       setRawDate: (date) => set({ rawDate: date }),
@@ -88,11 +88,11 @@ export const usePlanStore = create<PlanState>()(
       setKpi: (key, value) =>
         set((state) => ({ kpis: { ...state.kpis, [key]: value } })),
       setTeam: makeSectionSetter(set, 'team'),
-      setPausen: makeSectionSetter(set, 'pausen'),
+      setBreaks: makeSectionSetter(set, 'breaks'),
       setTodo: makeSectionSetter(set, 'todo'),
-      setKassen: makeSectionSetter(set, 'kassen'),
-      setAbend: makeSectionSetter(set, 'abend'),
-      setDailyFokus: makeSectionSetter(set, 'dailyFokus'),
+      setRegisters: makeSectionSetter(set, 'registers'),
+      setEveningShift: makeSectionSetter(set, 'eveningShift'),
+      setDailyFocus: makeSectionSetter(set, 'dailyFocus'),
       setNotes: makeSectionSetter(set, 'notes'),
     }),
     {

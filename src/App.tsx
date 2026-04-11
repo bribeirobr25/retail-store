@@ -34,16 +34,16 @@ export default function App() {
   const setKpi = usePlanStore((s) => s.setKpi);
   const team = usePlanStore((s) => s.team);
   const setTeam = usePlanStore((s) => s.setTeam);
-  const pausen = usePlanStore((s) => s.pausen);
-  const setPausen = usePlanStore((s) => s.setPausen);
+  const breaks = usePlanStore((s) => s.breaks);
+  const setBreaks = usePlanStore((s) => s.setBreaks);
   const todo = usePlanStore((s) => s.todo);
   const setTodo = usePlanStore((s) => s.setTodo);
-  const kassen = usePlanStore((s) => s.kassen);
-  const setKassen = usePlanStore((s) => s.setKassen);
-  const abend = usePlanStore((s) => s.abend);
-  const setAbend = usePlanStore((s) => s.setAbend);
-  const dailyFokus = usePlanStore((s) => s.dailyFokus);
-  const setDailyFokus = usePlanStore((s) => s.setDailyFokus);
+  const registers = usePlanStore((s) => s.registers);
+  const setRegisters = usePlanStore((s) => s.setRegisters);
+  const eveningShift = usePlanStore((s) => s.eveningShift);
+  const setEveningShift = usePlanStore((s) => s.setEveningShift);
+  const dailyFocus = usePlanStore((s) => s.dailyFocus);
+  const setDailyFocus = usePlanStore((s) => s.setDailyFocus);
   const notes = usePlanStore((s) => s.notes);
   const setNotes = usePlanStore((s) => s.setNotes);
 
@@ -73,7 +73,7 @@ export default function App() {
 
         {/* Main Content Grid - Two Independent Columns with Mobile Reordering */}
         <main className="px-4 py-6 md:px-6 lg:px-10 md:py-8 lg:py-12 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-6 lg:gap-x-32 md:gap-y-8 lg:gap-y-16 items-start">
-          {/* Left Column: KPIs, Team, Pausen, To Do */}
+          {/* Left Column: KPIs, Team, Breaks, Tasks */}
           <div className="contents md:flex md:flex-col md:gap-6 lg:gap-14">
             <div className="order-1">
               <div className="grid grid-cols-3 gap-3 md:gap-4 lg:gap-6">
@@ -127,8 +127,8 @@ export default function App() {
               <Section
                 title={t('sections.breaks')}
                 icon={Coffee}
-                items={pausen}
-                setItems={setPausen}
+                items={breaks}
+                setItems={setBreaks}
                 placeholderText={placeholder('defaults.breaks')}
                 color="border-pink-200"
                 printColumns
@@ -150,14 +150,14 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right Column: Daily Fokus, Kassen, Abend, Note */}
+          {/* Right Column: Daily Focus, Registers, Evening Shift, Notes */}
           <div className="contents md:flex md:flex-col md:gap-6 lg:gap-14">
             <div className="order-2">
               <Section
                 title={t('sections.dailyFocus')}
                 icon={Sparkles}
-                items={dailyFokus}
-                setItems={setDailyFokus}
+                items={dailyFocus}
+                setItems={setDailyFocus}
                 placeholderText={placeholder('defaults.focus')}
                 color="border-pink-100"
                 readOnly={isShared}
@@ -168,8 +168,8 @@ export default function App() {
               <Section
                 title={t('sections.registers')}
                 icon={ShoppingBag}
-                items={kassen}
-                setItems={setKassen}
+                items={registers}
+                setItems={setRegisters}
                 placeholderText={placeholder('defaults.registers')}
                 color="border-purple-200"
                 printColumns
@@ -181,8 +181,8 @@ export default function App() {
               <Section
                 title={t('sections.evening')}
                 icon={Moon}
-                items={abend}
-                setItems={setAbend}
+                items={eveningShift}
+                setItems={setEveningShift}
                 placeholderText={placeholder('defaults.evening')}
                 color="border-indigo-200"
                 formatDash
