@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText } from 'lucide-react';
-import { useTranslation } from '../i18n';
+import { useTranslation } from '../../i18n';
 import { ShareMenu } from './ShareMenu';
 
 export function FloatingActions() {

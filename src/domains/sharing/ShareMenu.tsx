@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Share2, Link, MessageCircle, Mail } from 'lucide-react';
-import { useTranslation } from '../i18n';
-import { buildShareUrl } from '../lib/share';
+import { useTranslation } from '../../i18n';
+import { buildShareUrl } from './share';
 
 export interface ShareMenuProps {
   /** Called when the link has been copied so a parent can show a toast */

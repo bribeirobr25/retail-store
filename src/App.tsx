@@ -16,7 +16,7 @@ import {
 import { Section } from './components/Section';
 import { Header } from './components/Header';
 import { KpiCard } from './components/KpiCard';
-import { FloatingActions } from './components/FloatingActions';
+import { FloatingActions } from './domains/sharing/FloatingActions';
 import { usePlanStore } from './store/planStore';
 
 export default function App() {
