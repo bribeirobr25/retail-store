@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderWithI18n, screen, userEvent, within, fireEvent } from './test/helpers';
 import App from './App';
-import { usePlanStore } from './store/planStore';
+import { usePlanStore } from './domains/plan/planStore';
 
 function setUrl(url: string) {
   window.history.replaceState({}, '', url);

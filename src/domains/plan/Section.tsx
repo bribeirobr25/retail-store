@@ -3,10 +3,10 @@ import type { LucideIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Trash2 } from 'lucide-react';
 
-import type { SectionItem } from '../shared/types';
-import { addItem, removeItem, updateItem } from '../lib/listOps';
-import { getTeamIcon } from '../domains/team/teamIcons';
-import { EditableInput } from '../shared/EditableInput';
+import type { SectionItem } from '../../shared/types';
+import { addItem, removeItem, updateItem } from './listOps';
+import { getTeamIcon } from '../team/teamIcons';
+import { EditableInput } from '../../shared/EditableInput';
 
 export interface SectionProps {
   title: string;

@@ -13,11 +13,11 @@ import {
   History,
 } from 'lucide-react';
 
-import { Section } from './components/Section';
+import { Section } from './domains/plan/Section';
 import { Header } from './components/Header';
-import { KpiCard } from './components/KpiCard';
+import { KpiCard } from './domains/plan/KpiCard';
 import { FloatingActions } from './domains/sharing/FloatingActions';
-import { usePlanStore } from './store/planStore';
+import { usePlanStore } from './domains/plan/planStore';
 
 export default function App() {
   const { t, tArray, locale } = useTranslation();

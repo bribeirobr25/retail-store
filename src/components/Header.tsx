@@ -1,9 +1,9 @@
 import { Calendar, ChevronDown, Heart, Star, Sparkles, History } from 'lucide-react';
 import { useTranslation } from '../i18n';
-import { usePlanStore, STORE_OPTIONS } from '../store/planStore';
+import { usePlanStore, STORE_OPTIONS } from '../domains/plan/planStore';
 import { StoreSelector } from '../domains/store-location/StoreSelector';
 import { LanguageToggle } from '../shared/LanguageToggle';
-import { KpiCard } from './KpiCard';
+import { KpiCard } from '../domains/plan/KpiCard';
 
 export interface HeaderProps {
   formattedDate: string;
