@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 import { Section } from './domains/plan/Section';
-import { Header } from './components/Header';
+import { Header } from './shared/Header';
 import { KpiCard } from './domains/plan/KpiCard';
 import { FloatingActions } from './domains/sharing/FloatingActions';
 import { usePlanStore } from './domains/plan/planStore';

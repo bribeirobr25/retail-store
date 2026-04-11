@@ -2,7 +2,7 @@ import { Calendar, ChevronDown, Heart, Star, Sparkles, History } from 'lucide-re
 import { useTranslation } from '../i18n';
 import { usePlanStore, STORE_OPTIONS } from '../domains/plan/planStore';
 import { StoreSelector } from '../domains/store-location/StoreSelector';
-import { LanguageToggle } from '../shared/LanguageToggle';
+import { LanguageToggle } from './LanguageToggle';
 import { KpiCard } from '../domains/plan/KpiCard';
 
 export interface HeaderProps {
