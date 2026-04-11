@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
-import { EditableInput } from './EditableInput';
+import { EditableInput } from '../shared/EditableInput';
 
 export interface KpiCardProps {
   icon: LucideIcon;

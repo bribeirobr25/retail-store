@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Dispatch, SetStateAction } from 'react';
-import type { SectionItem, KpiData } from '../types';
+import type { SectionItem, KpiData } from '../shared/types';
 
 const STORAGE_KEY = 'retail-store';
 

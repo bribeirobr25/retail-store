@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react';
-import type { SectionItem } from '../types';
+import type { SectionItem } from '../shared/types';
 import { randomIconIndex } from './teamIcons';
 
 export function addItem(

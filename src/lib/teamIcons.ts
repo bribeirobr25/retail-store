@@ -30,7 +30,7 @@ import svgCupcakebear from '../../images/svg/cupcakebear.svg';
 import svgRabbit from '../../images/svg/rabbit.svg';
 import svgPrinces from '../../images/svg/princes.svg';
 
-import type { TeamIcon } from '../types';
+import type { TeamIcon } from '../shared/types';
 
 export const TEAM_ICONS: TeamIcon[] = [
   // Custom SVGs
