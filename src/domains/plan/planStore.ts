@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Dispatch, SetStateAction } from 'react';
 import type { SectionItem, KpiData } from '../../shared/types';
+import { sessionStorageService } from '../../shared/services/storage';
 
 const STORAGE_KEY = 'retail-store';
 
@@ -96,7 +97,7 @@ export const usePlanStore = create<PlanState>()(
     }),
     {
       name: STORAGE_KEY,
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => sessionStorageService),
     },
   ),
 );
