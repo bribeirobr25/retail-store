@@ -3,7 +3,11 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Share2, Link, MessageCircle, Mail } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { analytics } from '../../shared/services/analytics';
-import { buildShareUrl } from './share';
+import { usePlanStore, getPersistableState } from '../plan/planStore';
+// MVP-SHARE-URL: until Phase 1 cloud sharing replaces this, we encode the
+// plan state directly into the share URL so receivers see the sharer's data.
+// See docs/FUTURE_VISION.md → Phase 1 → MVP Cleanup Tasks.
+import { buildShareUrlWithState } from './encodeShareUrl';
 
 export interface ShareMenuProps {
   /** Called when the link has been copied so a parent can show a toast */
@@ -26,7 +30,12 @@ export function ShareMenu({ onCopySuccess }: ShareMenuProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu]);
 
-  const getShareUrl = () => buildShareUrl(window.location.href, lang);
+  const getShareUrl = () => {
+    // Read the latest store state at click time so the URL captures any
+    // edits the user made just before sharing.
+    const planState = getPersistableState(usePlanStore.getState());
+    return buildShareUrlWithState(window.location.href, lang, planState);
+  };
 
   const handleCopyLink = () => {
     analytics.track('link_copied');

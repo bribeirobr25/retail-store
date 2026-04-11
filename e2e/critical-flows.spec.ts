@@ -87,4 +87,38 @@ test.describe('critical user flows', () => {
     await expect(page.getByRole('heading', { name: 'Team' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Breaks' })).toBeVisible();
   });
+
+  // MVP-SHARE-URL: end-to-end test of the URL-encoded share fallback.
+  // Will be replaced by a cloud-share test in Phase 1.
+  test('share URL carries the senders edits to a fresh browser context', async ({ page, context }) => {
+    // 1) Sender: edit a team member name
+    const teamSection = page.locator('section').filter({ has: page.getByRole('heading', { name: 'Team' }) });
+    await teamSection.getByText('Name', { exact: true }).first().click();
+    const textarea = teamSection.locator('textarea').first();
+    await textarea.fill('Anna');
+    await textarea.press('Enter');
+
+    // 2) Sender: open the share menu and copy the link by reading
+    //    navigator.clipboard via page.evaluate. Granting clipboard permission
+    //    avoids a browser prompt during the test.
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.getByRole('button', { name: 'Teilen' }).click();
+    await page.getByRole('button', { name: /link kopieren/i }).click();
+    const sharedUrl = await page.evaluate(() => navigator.clipboard.readText());
+    expect(sharedUrl).toContain('mode=shared');
+    expect(sharedUrl).toContain('d=');
+
+    // 3) Receiver: open the URL in a fresh page. We navigate to the app
+    //    first so sessionStorage is accessible, then wipe it, then load
+    //    the shared URL — the receiver sees only what the URL carries.
+    const receiverPage = await context.newPage();
+    await receiverPage.goto('/');
+    await receiverPage.evaluate(() => sessionStorage.clear());
+    await receiverPage.goto(sharedUrl);
+
+    const receiverTeam = receiverPage.locator('section').filter({
+      has: receiverPage.getByRole('heading', { name: 'Team' }),
+    });
+    await expect(receiverTeam.getByText('Anna')).toBeVisible();
+  });
 });

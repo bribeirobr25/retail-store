@@ -82,8 +82,8 @@ export default function App() {
                   icon={Target}
                   iconColor="text-blue-500"
                   valueColor="text-blue-500"
-                  value={kpis.target}
-                  onSave={(val) => setKpi('target', val)}
+                  value={kpis.dailyTarget}
+                  onSave={(val) => setKpi('dailyTarget', val)}
                   label={t('kpi.todaysTarget')}
                   readOnly={isShared}
                 />
@@ -92,8 +92,8 @@ export default function App() {
                   icon={History}
                   iconColor="text-pink-500"
                   valueColor="text-pink-500"
-                  value={kpis.vj}
-                  onSave={(val) => setKpi('vj', val)}
+                  value={kpis.lastYearDay}
+                  onSave={(val) => setKpi('lastYearDay', val)}
                   label={t('kpi.lastYear')}
                   readOnly={isShared}
                 />
@@ -102,8 +102,8 @@ export default function App() {
                   icon={Layout}
                   iconColor="text-purple-500"
                   valueColor="text-purple-500"
-                  value={kpis.targetWeek}
-                  onSave={(val) => setKpi('targetWeek', val)}
+                  value={kpis.weeklyTarget}
+                  onSave={(val) => setKpi('weeklyTarget', val)}
                   label={t('kpi.weeksTarget')}
                   readOnly={isShared}
                 />

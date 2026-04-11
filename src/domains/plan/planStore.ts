@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Dispatch, SetStateAction } from 'react';
 import type { SectionItem, KpiData } from '../../shared/types';
 import { sessionStorageService } from '../../shared/services/storage';
+import { PersistedPlanStateSchema, type PersistedPlanState } from './planSchema';
 
 const STORAGE_KEY = 'retail-store';
 
@@ -17,12 +18,12 @@ export const STORE_OPTIONS = [
 ] as const;
 
 const DEFAULT_KPIS: KpiData = {
-  vj: '00.000',
-  target: '00.000',
-  targetWeek: '00.000',
-  t1: '000.000',
-  t2: '000.000',
-  ly: '000.000',
+  dailyTarget: '00.000',
+  lastYearDay: '00.000',
+  weeklyTarget: '00.000',
+  lastYearMonth: '000.000',
+  monthlyTarget1: '000.000',
+  monthlyTarget2: '000.000',
 };
 
 const emptyItems = (): SectionItem[] => [{ id: 1, text: '' }];
@@ -69,6 +70,32 @@ function makeSectionSetter(
     }));
 }
 
+/**
+ * Extracts the data-only fields from a PlanState (no actions).
+ *
+ * Used by:
+ * - the cloud sync layer (Phase 1) to know what to sync
+ * - the URL-encoded share feature (MVP-SHARE-URL — see
+ *   docs/FUTURE_VISION.md Phase 1 cleanup section)
+ *
+ * Keeping the field list in one place means adding a new section requires
+ * touching the store interface and this helper — both right next to each other.
+ */
+export function getPersistableState(state: PlanState): PersistedPlanState {
+  return {
+    rawDate: state.rawDate,
+    selectedStore: state.selectedStore,
+    kpis: state.kpis,
+    team: state.team,
+    breaks: state.breaks,
+    todo: state.todo,
+    registers: state.registers,
+    eveningShift: state.eveningShift,
+    dailyFocus: state.dailyFocus,
+    notes: state.notes,
+  };
+}
+
 export const usePlanStore = create<PlanState>()(
   persist(
     (set) => ({
@@ -98,6 +125,17 @@ export const usePlanStore = create<PlanState>()(
     {
       name: STORAGE_KEY,
       storage: createJSONStorage(() => sessionStorageService),
+      // Validate persisted data on hydration. If the schema fails (corrupt or
+      // outdated payload), fall back to the default state instead of crashing.
+      merge: (persistedState, currentState) => {
+        const result = PersistedPlanStateSchema.safeParse(persistedState);
+        if (result.success) {
+          return { ...currentState, ...result.data };
+        }
+        // eslint-disable-next-line no-console
+        console.warn('[planStore] persisted state failed validation, using defaults', result.error);
+        return currentState;
+      },
     },
   ),
 );

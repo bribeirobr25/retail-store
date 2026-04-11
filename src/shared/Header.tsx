@@ -81,8 +81,8 @@ export function Header({ formattedDate, currentMonth, isShared }: HeaderProps) {
               icon={History}
               iconColor="text-blue-500"
               valueColor="text-blue-600"
-              value={kpis.ly}
-              onSave={(val) => setKpi('ly', val)}
+              value={kpis.lastYearMonth}
+              onSave={(val) => setKpi('lastYearMonth', val)}
               label={t('kpi.ly')}
               readOnly={isShared}
             />
@@ -90,8 +90,8 @@ export function Header({ formattedDate, currentMonth, isShared }: HeaderProps) {
               icon={Star}
               iconColor="text-yellow-500"
               valueColor="text-yellow-600"
-              value={kpis.t1}
-              onSave={(val) => setKpi('t1', val)}
+              value={kpis.monthlyTarget1}
+              onSave={(val) => setKpi('monthlyTarget1', val)}
               label={t('kpi.t1')}
               readOnly={isShared}
             />
@@ -99,8 +99,8 @@ export function Header({ formattedDate, currentMonth, isShared }: HeaderProps) {
               icon={Sparkles}
               iconColor="text-orange-500"
               valueColor="text-orange-600"
-              value={kpis.t2}
-              onSave={(val) => setKpi('t2', val)}
+              value={kpis.monthlyTarget2}
+              onSave={(val) => setKpi('monthlyTarget2', val)}
               label={t('kpi.t2')}
               readOnly={isShared}
             />
