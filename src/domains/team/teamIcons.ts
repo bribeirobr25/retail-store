@@ -19,18 +19,18 @@ import {
   Medal,
 } from 'lucide-react';
 
-import svgCat from '../../images/svg/cat.svg';
-import svgBall from '../../images/svg/ball.svg';
-import svgPuppy from '../../images/svg/puppy.svg';
-import svgPrincess from '../../images/svg/princess.svg';
-import svgPanda from '../../images/svg/panda.svg';
-import svgUnicorn from '../../images/svg/unicorn.svg';
-import svgTeacat from '../../images/svg/teacat.svg';
-import svgCupcakebear from '../../images/svg/cupcakebear.svg';
-import svgRabbit from '../../images/svg/rabbit.svg';
-import svgPrinces from '../../images/svg/princes.svg';
+import svgCat from '../../../images/svg/cat.svg';
+import svgBall from '../../../images/svg/ball.svg';
+import svgPuppy from '../../../images/svg/puppy.svg';
+import svgPrincess from '../../../images/svg/princess.svg';
+import svgPanda from '../../../images/svg/panda.svg';
+import svgUnicorn from '../../../images/svg/unicorn.svg';
+import svgTeacat from '../../../images/svg/teacat.svg';
+import svgCupcakebear from '../../../images/svg/cupcakebear.svg';
+import svgRabbit from '../../../images/svg/rabbit.svg';
+import svgPrinces from '../../../images/svg/princes.svg';
 
-import type { TeamIcon } from '../shared/types';
+import type { TeamIcon } from '../../shared/types';
 
 export const TEAM_ICONS: TeamIcon[] = [
   // Custom SVGs
