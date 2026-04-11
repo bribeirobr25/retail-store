@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { analytics } from '../../shared/services/analytics';
 import { ShareMenu } from './ShareMenu';
 
 export function FloatingActions() {
@@ -21,7 +22,10 @@ export function FloatingActions() {
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          onClick={() => window.print()}
+          onClick={() => {
+            analytics.track('pdf_generated');
+            window.print();
+          }}
           className="bg-linear-to-r from-pink-500 to-purple-600 text-white px-5 py-3 md:px-8 md:py-4 rounded-full shadow-2xl transition-all flex items-center gap-2 md:gap-3 font-funny text-base md:text-lg cursor-pointer"
         >
           <FileText size={20} />

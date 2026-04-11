@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderWithI18n, screen, userEvent, within, fireEvent } from './test/helpers';
 import App from './App';
 import { usePlanStore } from './domains/plan/planStore';
+import { analytics } from './shared/services/analytics';
 
 function setUrl(url: string) {
   window.history.replaceState({}, '', url);
@@ -77,6 +78,17 @@ describe('App', () => {
 
       expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /generate pdf/i })).toBeInTheDocument();
+    });
+
+    it('emits a language_switched analytics event when toggling DE -> EN', async () => {
+      const user = userEvent.setup();
+      const trackSpy = vi.spyOn(analytics, 'track');
+      renderWithI18n(<App />);
+
+      await user.click(screen.getByRole('button', { name: 'EN' }));
+
+      expect(trackSpy).toHaveBeenCalledWith('language_switched', { from: 'de', to: 'en' });
+      trackSpy.mockRestore();
     });
   });
 

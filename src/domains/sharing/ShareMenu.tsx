@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Share2, Link, MessageCircle, Mail } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { analytics } from '../../shared/services/analytics';
 import { buildShareUrl } from './share';
 
 export interface ShareMenuProps {
@@ -28,18 +29,21 @@ export function ShareMenu({ onCopySuccess }: ShareMenuProps) {
   const getShareUrl = () => buildShareUrl(window.location.href, lang);
 
   const handleCopyLink = () => {
+    analytics.track('link_copied');
     navigator.clipboard.writeText(getShareUrl());
     setShowMenu(false);
     onCopySuccess?.();
   };
 
   const handleShareWhatsApp = () => {
+    analytics.track('whatsapp_shared');
     const text = encodeURIComponent(`${t('share.whatsappText')}${getShareUrl()}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
     setShowMenu(false);
   };
 
   const handleShareEmail = () => {
+    analytics.track('email_shared');
     const subject = encodeURIComponent(t('share.emailSubject'));
     const body = encodeURIComponent(`${t('share.emailBody')}${getShareUrl()}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
